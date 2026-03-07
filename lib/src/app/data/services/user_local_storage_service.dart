@@ -113,31 +113,104 @@ class UserLocalStorageService implements IlocalStorageService<User> {
 
   @override
   Future<User?> getData(int key) async {
-    _databaseInstance = await openDatabase(LocalStorage.LocalDb);
-    final tables = await _databaseInstance.rawQuery(''' SELECT name FROM sqlite_master WHERE type='table' AND name='user' ''');
-    if (tables.isEmpty) return null;
+    try {
+      _databaseInstance = await openDatabase(LocalStorage.LocalDb);
+      final tables = await _databaseInstance.rawQuery(''' SELECT name FROM sqlite_master WHERE type='table' AND name='user' ''');
+      if (tables.isEmpty) return null;
 
-    final userQuery = await _databaseInstance.rawQuery('''SELECT * FROM user WHERE id = ?''', [key]);
+      final userQuery = await _databaseInstance.rawQuery(''' SELECT * FROM user WHERE id = ? ''', [key]);
 
-    if (userQuery.isEmpty) {
-      return null;
+      if (userQuery.isEmpty) {
+        return null;
+      }
+
+      final addressQuery = await _databaseInstance.rawQuery(''' SELECT * FROM address WHERE id = ? ''', [key]);
+
+      final userMap = userQuery.first as Map<String, dynamic>;
+      final addressMap = addressQuery.first as Map<String, dynamic>;
+      final address = Address.fromJson(addressMap);
+      User user = User.fromJson(userMap);
+      user = user.copyWith(address: address);
+
+      return user;
+    } on DatabaseException catch (_) {
+      throw StorageError(message: 'Erro durante consulta no banco de dados.');
+    } finally {
+      await _databaseInstance.close();
     }
-
-    final addressQuery = await _databaseInstance.rawQuery('''SELECT * FROM address WHERE id = ?''', [key]);
-
-    final userMap = userQuery.first as Map<String, dynamic>;
-    final addressMap = addressQuery.first as Map<String, dynamic>;
-    final address = Address.fromJson(addressMap);
-    User user = User.fromJson(userMap);
-    user = user.copyWith(address: address);
-
-    return user;
   }
 
   @override
-  Future<User> updateData(int key, User data) async {
-    // TODO: implement updateData
-    throw UnimplementedError();
+  Future<User?> updateData(int key, User data) async {
+    try {
+      _databaseInstance = await openDatabase(LocalStorage.LocalDb);
+
+      final tables = await _databaseInstance.rawQuery(''' SELECT name FROM sqlite_master WHERE type='table' AND name='user' ''');
+      if (tables.isEmpty) {
+        throw StorageError(message: 'Tabela de usuário não existe.');
+      }
+
+      final userQuery = await _databaseInstance.rawQuery(''' SELECT * FROM user WHERE id = ? ''', [key]);
+
+      if (userQuery.isEmpty) {
+        throw StorageError(message: 'Usuário com id $key não encontrado.');
+      }
+
+      await _databaseInstance.transaction(
+        (transaction) async {
+          await transaction.rawUpdate(
+            '''
+              UPDATE user SET
+                name = ?,
+                username = ?,
+                email = ?,
+                phone = ?,
+                website = ?,
+                profileImage = ?,
+                userType = ?
+              WHERE id = ?
+            ''',
+            [
+              data.name,
+              data.username,
+              data.email,
+              data.phone,
+              data.website,
+              data.profileImage,
+              data.userType.name,
+              key,
+            ],
+          );
+        },
+      );
+
+      await _databaseInstance.transaction(
+        (transaction) async {
+          await transaction.rawUpdate(
+            '''
+              UPDATE address SET
+                street = ?,
+                suite = ?,
+                city = ?
+              WHERE id = ?
+            ''',
+            [
+              data.address?.street ?? 'default value for street',
+              data.address?.suite ?? 'default value for suite',
+              data.address?.city ?? 'default value for city',
+              key,
+            ],
+          );
+        },
+      );
+
+      final updatedUser = await getData(key);
+      return updatedUser;
+    } on DatabaseException catch (_) {
+      throw StorageError(message: 'Erro durante atualização no banco de dados.');
+    } finally {
+      await _databaseInstance.close();
+    }
   }
 
   @override

@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:post_app/src/app/data/errors/storage/storage_error.dart';
 import 'package:post_app/src/app/data/services/user_local_storage_service.dart';
 import 'package:post_app/src/app/domain/entities/user/address.dart';
 import 'package:post_app/src/app/domain/entities/user/user.dart';
@@ -136,6 +137,101 @@ void main() {
                 (user) => user.profileImage,
                 'User profile image',
                 'https://user.img.com',
+              ),
+        );
+      });
+    },
+  );
+
+  group(
+    'updateData should',
+    () {
+      test('throw StorageError when user id does not exist.', () async {
+        final invalidId = Random(5).nextDouble().toInt();
+
+        expect(
+          () => storage.updateData(
+            invalidId,
+            User(
+              id: invalidId,
+              name: 'Updated Name',
+              username: 'updated_username',
+              email: 'updated@email.com',
+              phone: '5599999995544',
+              website: 'mywebsite.com',
+              profileImage: 'https://updated.img.com',
+              address: Address(
+                street: 'New Street',
+                suite: '200',
+                city: 'New City',
+              ),
+            ),
+          ),
+          throwsA(isA<StorageError>()),
+        );
+      });
+
+      test('update user data when valid id is provided.', () async {
+        await storage.saveData(
+          userId,
+          User(
+            id: userId,
+            name: 'Júnior Olisi',
+            username: 'junior_olisi',
+            email: 'jr@email.com',
+            phone: '5599999995544',
+            website: 'mywebsite.com',
+            profileImage: 'https://user.img.com',
+            address: Address(
+              street: 'Rua dos Alfeneiros',
+              suite: '410',
+              city: 'Little Whinging',
+            ),
+          ),
+        );
+
+        await storage.updateData(
+          userId,
+          User(
+            id: userId,
+            name: 'Updated Name',
+            username: 'updated_username',
+            email: 'updated@email.com',
+            phone: '5599999995544',
+            website: 'mywebsite.com',
+            profileImage: 'https://updated.img.com',
+            address: Address(
+              street: 'New Street',
+              suite: '200',
+              city: 'New City',
+            ),
+          ),
+        );
+
+        final result = await storage.getData(userId);
+
+        expect(
+          result,
+          isA<User>()
+              .having(
+                (user) => user.id,
+                'User id',
+                2,
+              )
+              .having(
+                (user) => user.name,
+                'User name',
+                'Updated Name',
+              )
+              .having(
+                (user) => user.profileImage,
+                'User profile image',
+                'https://updated.img.com',
+              )
+              .having(
+                (user) => user.address?.street,
+                'User address street',
+                'New Street',
               ),
         );
       });
