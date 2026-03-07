@@ -1,5 +1,6 @@
 import 'package:post_app/src/app/data/errors/storage/storage_error.dart';
 import 'package:post_app/src/app/data/interfaces/ilocal_storage_service.dart';
+import 'package:post_app/src/app/domain/entities/user/address.dart';
 import 'package:post_app/src/app/domain/entities/user/user.dart';
 import 'package:post_app/src/app/shared/backend/local_storage.dart';
 import 'package:sqflite/sqflite.dart';
@@ -96,9 +97,9 @@ class UserLocalStorageService implements IlocalStorageService<User> {
             ''',
             [
               data.id,
-              data.address.street,
-              data.address.suite,
-              data.address.city,
+              data.address?.street ?? 'default value for street',
+              data.address?.suite ?? 'default value for suite',
+              data.address?.city ?? 'default value for city',
             ],
           );
         },
@@ -111,9 +112,26 @@ class UserLocalStorageService implements IlocalStorageService<User> {
   }
 
   @override
-  Future<User> getData(int key) async {
-    // TODO: implement getData
-    throw UnimplementedError();
+  Future<User?> getData(int key) async {
+    _databaseInstance = await openDatabase(LocalStorage.LocalDb);
+    final tables = await _databaseInstance.rawQuery(''' SELECT name FROM sqlite_master WHERE type='table' AND name='user' ''');
+    if (tables.isEmpty) return null;
+
+    final userQuery = await _databaseInstance.rawQuery('''SELECT * FROM user WHERE id = ?''', [key]);
+
+    if (userQuery.isEmpty) {
+      return null;
+    }
+
+    final addressQuery = await _databaseInstance.rawQuery('''SELECT * FROM address WHERE id = ?''', [key]);
+
+    final userMap = userQuery.first as Map<String, dynamic>;
+    final addressMap = addressQuery.first as Map<String, dynamic>;
+    final address = Address.fromJson(addressMap);
+    User user = User.fromJson(userMap);
+    user = user.copyWith(address: address);
+
+    return user;
   }
 
   @override

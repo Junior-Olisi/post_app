@@ -14,7 +14,7 @@ abstract class User with _$User {
     required String email,
     required String phone,
     required String website,
-    required Address address,
+    Address? address,
     String? profileImage,
     @Default(UserType.primary) UserType userType,
   }) = _User;
