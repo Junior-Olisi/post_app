@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:post_app/src/app/ui/modules/initial/mixins/splash_page_mixin.dart';
+import 'package:post_app/src/app/modules/initial/ui/mixins/splash_page_mixin.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
