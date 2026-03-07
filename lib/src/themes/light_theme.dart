@@ -9,18 +9,14 @@ ThemeData lightTheme() {
     colorScheme: ColorScheme.light(
       primary: AppColors.lightPrimary,
       onPrimary: AppColors.white,
-      error: AppColors.lightError,
-      onError: AppColors.white,
-      surface: AppColors.lightSurface,
+      surface: AppColors.lightBackground,
       onSurface: AppColors.lightTextPrimary,
       onSurfaceVariant: AppColors.lightTextSecondary,
-      outline: AppColors.lightBorder,
     ),
     scaffoldBackgroundColor: AppColors.lightBackground,
-    cardColor: AppColors.lightSurface,
-    dividerColor: AppColors.lightBorder,
+    cardColor: AppColors.lightBackground,
     appBarTheme: AppBarTheme(
-      backgroundColor: AppColors.lightSurface,
+      backgroundColor: AppColors.white,
       foregroundColor: AppColors.lightTextPrimary,
       elevation: 0,
       centerTitle: false,
@@ -90,7 +86,7 @@ ThemeData lightTheme() {
       style: OutlinedButton.styleFrom(
         foregroundColor: AppColors.lightPrimary,
         side: const BorderSide(
-          color: AppColors.lightBorder,
+          color: AppColors.lightTextSecondary,
           width: 1,
         ),
         textStyle: AppTypography.titleMedium.copyWith(
@@ -108,16 +104,16 @@ ThemeData lightTheme() {
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: AppColors.lightBackground,
+      fillColor: AppColors.white,
       border: OutlineInputBorder(
         borderSide: const BorderSide(
-          color: AppColors.lightBorder,
+          color: AppColors.lightTextSecondary,
           width: 1,
         ),
       ),
       enabledBorder: OutlineInputBorder(
         borderSide: const BorderSide(
-          color: AppColors.lightBorder,
+          color: AppColors.lightTextSecondary,
           width: 1,
         ),
       ),
@@ -129,13 +125,13 @@ ThemeData lightTheme() {
       ),
       errorBorder: OutlineInputBorder(
         borderSide: const BorderSide(
-          color: AppColors.lightError,
+          color: AppColors.lightPrimary,
           width: 1,
         ),
       ),
       focusedErrorBorder: OutlineInputBorder(
         borderSide: const BorderSide(
-          color: AppColors.lightError,
+          color: AppColors.lightPrimary,
           width: 2,
         ),
       ),
@@ -146,7 +142,7 @@ ThemeData lightTheme() {
         color: AppColors.lightTextSecondary,
       ),
       errorStyle: AppTypography.bodySmall.copyWith(
-        color: AppColors.lightError,
+        color: AppColors.lightPrimary,
       ),
     ),
     iconTheme: const IconThemeData(
@@ -158,10 +154,9 @@ ThemeData lightTheme() {
         if (states.contains(WidgetState.selected)) {
           return AppColors.lightPrimary;
         }
-        return AppColors.lightBorder;
+        return AppColors.lightTextSecondary;
       }),
       checkColor: WidgetStateProperty.all(AppColors.white),
-      shape: RoundedRectangleBorder(),
     ),
     radioTheme: RadioThemeData(
       fillColor: WidgetStateProperty.resolveWith((states) {
