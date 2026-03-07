@@ -9,6 +9,7 @@ class AppWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
       title: 'Post App',
       theme: lightTheme(),
       darkTheme: darkTheme(),

@@ -1,0 +1,4 @@
+enum UserType {
+  primary,
+  selected,
+}
