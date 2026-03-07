@@ -28,3 +28,4 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 *_ai.md
+.vscode/launch.json
