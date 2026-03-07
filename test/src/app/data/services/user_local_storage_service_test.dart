@@ -237,4 +237,44 @@ void main() {
       });
     },
   );
+
+  group(
+    'deleteData should',
+    () {
+      test('throw StorageError when user id does not exist.', () async {
+        final invalidId = Random(5).nextDouble().toInt();
+
+        expect(
+          () => storage.deleteData(invalidId),
+          throwsA(isA<StorageError>()),
+        );
+      });
+
+      test('delete user data when valid id is provided.', () async {
+        await storage.saveData(
+          userId,
+          User(
+            id: userId,
+            name: 'Júnior Olisi',
+            username: 'junior_olisi',
+            email: 'jr@email.com',
+            phone: '5599999995544',
+            website: 'mywebsite.com',
+            profileImage: 'https://user.img.com',
+            address: Address(
+              street: 'Rua dos Alfeneiros',
+              suite: '410',
+              city: 'Little Whinging',
+            ),
+          ),
+        );
+
+        await storage.deleteData(userId);
+
+        final result = await storage.getData(userId);
+
+        expect(result, isNull);
+      });
+    },
+  );
 }

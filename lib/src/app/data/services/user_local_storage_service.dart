@@ -215,7 +215,41 @@ class UserLocalStorageService implements IlocalStorageService<User> {
 
   @override
   Future<void> deleteData(int key) async {
-    // TODO: implement deleteData
-    throw UnimplementedError();
+    try {
+      _databaseInstance = await openDatabase(LocalStorage.LocalDb);
+
+      final tables = await _databaseInstance.rawQuery(''' SELECT name FROM sqlite_master WHERE type='table' AND name='user' ''');
+      if (tables.isEmpty) {
+        throw StorageError(message: 'Tabela de usuário não existe.');
+      }
+
+      final userQuery = await _databaseInstance.rawQuery(''' SELECT * FROM user WHERE id = ? ''', [key]);
+
+      if (userQuery.isEmpty) {
+        throw StorageError(message: 'Usuário com id $key não encontrado.');
+      }
+
+      await _databaseInstance.transaction(
+        (transaction) async {
+          await transaction.rawDelete(
+            '''DELETE FROM user WHERE id = ?''',
+            [key],
+          );
+        },
+      );
+
+      await _databaseInstance.transaction(
+        (transaction) async {
+          await transaction.rawDelete(
+            '''DELETE FROM address WHERE id = ?''',
+            [key],
+          );
+        },
+      );
+    } on DatabaseException catch (_) {
+      throw StorageError(message: 'Erro durante exclusão no banco de dados.');
+    } finally {
+      await _databaseInstance.close();
+    }
   }
 }
