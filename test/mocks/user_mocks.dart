@@ -1,3 +1,5 @@
+import 'package:post_app/src/app/domain/entities/user/user.dart';
+
 final userMapsList = <Map<String, dynamic>>[
   {
     'id': 1,
@@ -48,3 +50,30 @@ final userMapsList = <Map<String, dynamic>>[
     'company': {'name': 'Romaguera-Jacobson', 'catchPhrase': 'Face to face bifurcated interface', 'bs': 'e-enable strategic applications'},
   },
 ];
+
+final randoUserMap = <String, dynamic>{
+  'results': [
+    {
+      'picture': {
+        'large': 'https://randomuser.me/api/portraits/men/42.jpg',
+        'medium': 'https://randomuser.me/api/portraits/med/men/42.jpg',
+        'thumbnail': 'https://randomuser.me/api/portraits/thumb/men/42.jpg',
+      },
+    },
+  ],
+  'info': {
+    'seed': '1',
+    'results': 1,
+    'page': 1,
+    'version': '1.4',
+  },
+};
+
+final userMock = User(
+  id: 6,
+  name: 'name',
+  username: 'username',
+  email: 'email',
+  phone: 'phone',
+  website: 'website',
+);
