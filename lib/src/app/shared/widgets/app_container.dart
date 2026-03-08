@@ -14,8 +14,8 @@ class AppContainer extends StatelessWidget {
         height: size.height,
         width: size.width,
         padding: EdgeInsets.symmetric(
-          vertical: size.height * 0.048,
-          horizontal: size.width * 0.024,
+          vertical: size.height * 0.064,
+          horizontal: size.width * 0.072,
         ),
         child: child,
       ),

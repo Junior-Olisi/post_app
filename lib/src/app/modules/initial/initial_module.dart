@@ -11,6 +11,7 @@ import 'package:post_app/src/app/modules/post/post_module.dart';
 import 'package:post_app/src/app/modules/profile/profile_module.dart';
 import 'package:post_app/src/app/modules/user/user_module.dart';
 import 'package:post_app/src/app/shared/routes/initial_module_routes.dart';
+import 'package:post_app/src/app/shared/routes/user_module_routes.dart';
 
 import 'ui/pages/splash_page.dart';
 
@@ -35,7 +36,7 @@ class InitialModule extends Module {
     );
 
     r.module(
-      '/user',
+      UserModuleRoutes.ROOT,
       module: UserModule(),
     );
 

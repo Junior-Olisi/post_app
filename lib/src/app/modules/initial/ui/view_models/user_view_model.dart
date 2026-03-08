@@ -10,6 +10,8 @@ class UserViewModel {
   final IUserRepository _repository;
 
   late List<User> usersList = [];
+  late User primaryUser;
+  late User selectedUser;
 
   late final getAllUsersCommand = Command0(_getAllUsers);
   late final mergeUserDataCommand = Command1(_mergeUserData);

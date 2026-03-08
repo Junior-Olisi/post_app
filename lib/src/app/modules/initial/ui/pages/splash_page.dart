@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:post_app/src/app/modules/initial/ui/mixins/splash_page_mixin.dart';
+import 'package:post_app/src/app/shared/widgets/app_button.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -58,16 +59,11 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
                       : Visibility(
                           visible: showRetryButton.value,
                           replacement: Container(),
-                          child: ElevatedButton(
+                          child: AppButton(
                             onPressed: () async {
                               await userViewModel.getAllUsersCommand.execute();
                             },
-                            style: ElevatedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                            ),
-                            child: Text('Tentar Novamente'),
+                            text: 'Tentar Novamente',
                           ),
                         );
                 },
