@@ -1,27 +1,34 @@
-import 'package:dio/dio.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:post_app/src/app/data/interfaces/ilocal_storage_service.dart';
+import 'package:post_app/src/app/data/interfaces/ipost_repository.dart';
 import 'package:post_app/src/app/data/interfaces/iuser_repository.dart';
+import 'package:post_app/src/app/data/repositories/post_repository.dart';
 import 'package:post_app/src/app/data/repositories/user_repository.dart';
-import 'package:post_app/src/app/data/services/user_local_storage_service.dart';
-import 'package:post_app/src/app/domain/entities/user/user.dart';
 import 'package:post_app/src/app/modules/initial/ui/pages/initial_page.dart';
+import 'package:post_app/src/app/modules/initial/ui/view_models/post_view_model.dart';
 import 'package:post_app/src/app/modules/initial/ui/view_models/user_view_model.dart';
 import 'package:post_app/src/app/modules/post/post_module.dart';
 import 'package:post_app/src/app/modules/profile/profile_module.dart';
 import 'package:post_app/src/app/modules/user/user_module.dart';
+import 'package:post_app/src/app/shared/common_module.dart';
 import 'package:post_app/src/app/shared/routes/initial_module_routes.dart';
+import 'package:post_app/src/app/shared/routes/post_module_routes.dart';
+import 'package:post_app/src/app/shared/routes/profile_module_routes.dart';
 import 'package:post_app/src/app/shared/routes/user_module_routes.dart';
 
 import 'ui/pages/splash_page.dart';
 
 class InitialModule extends Module {
   @override
+  List<Module> get imports => [
+    CommonModule(),
+  ];
+
+  @override
   void binds(Injector i) {
-    i.add<Dio>(() => Dio(BaseOptions()));
-    i.addSingleton<IlocalStorageService<User>>(UserLocalStorageService.new);
     i.addSingleton<IUserRepository>(UserRepository.new);
     i.addSingleton<UserViewModel>(UserViewModel.new);
+    i.addSingleton<IPostRepository>(PostRepository.new);
+    i.addSingleton<PostViewModel>(PostViewModel.new);
   }
 
   @override
@@ -41,13 +48,13 @@ class InitialModule extends Module {
     );
 
     r.module(
-      '/post',
-      module: PostModule(),
+      ProfileModuleRoutes.ROOT,
+      module: ProfileModule(),
     );
 
     r.module(
-      '/profile',
-      module: ProfileModule(),
+      PostModuleRoutes.ROOT,
+      module: PostModule(),
     );
   }
 }
