@@ -171,6 +171,72 @@ void main() {
         );
       });
 
+      group(
+        'getAllData should',
+        () {
+          test('return empty list when no users are saved.', () async {
+            final result = await storage.getAllData();
+
+            expect(result, isA<List<User>>());
+            expect(result, isEmpty);
+          });
+
+          test('return a list of all saved users.', () async {
+            final user1Id = 1;
+            final user2Id = 2;
+
+            await storage.saveData(
+              user1Id,
+              User(
+                id: user1Id,
+                name: 'Júnior Olisi',
+                username: 'junior_olisi',
+                email: 'jr@email.com',
+                phone: '5599999995544',
+                website: 'mywebsite.com',
+                profileImage: 'https://user.img.com',
+                address: Address(
+                  street: 'Rua dos Alfeneiros',
+                  suite: '410',
+                  city: 'Little Whinging',
+                ),
+              ),
+            );
+
+            await storage.saveData(
+              user2Id,
+              User(
+                id: user2Id,
+                name: 'Harry Potter',
+                username: 'harry_potter',
+                email: 'hp@email.com',
+                phone: '5599999995545',
+                website: 'harrywebsite.com',
+                profileImage: 'https://hp.img.com',
+                address: Address(
+                  street: 'Privet Drive',
+                  suite: '4',
+                  city: 'Little Whinging',
+                ),
+              ),
+            );
+
+            final result = await storage.getAllData();
+
+            expect(result, isA<List<User>>());
+            expect(result, isNotEmpty);
+            expect(result.length, equals(2));
+            expect(
+              result,
+              containsAll([
+                isA<User>().having((user) => user.id, 'User id', user1Id),
+                isA<User>().having((user) => user.id, 'User id', user2Id),
+              ]),
+            );
+          });
+        },
+      );
+
       test('update user data when valid id is provided.', () async {
         await storage.saveData(
           userId,

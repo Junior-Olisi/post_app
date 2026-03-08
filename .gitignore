@@ -31,3 +31,4 @@ app.*.map.json
 .vscode/launch.json
 *.g.dart
 *.freezed.dart
+coverage/lcov.info

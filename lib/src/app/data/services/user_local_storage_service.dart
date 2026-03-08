@@ -141,6 +141,45 @@ class UserLocalStorageService implements IlocalStorageService<User> {
   }
 
   @override
+  Future<List<User>> getAllData() async {
+    try {
+      _databaseInstance = await openDatabase(LocalStorage.LocalDb);
+
+      final tables = await _databaseInstance.rawQuery(''' SELECT name FROM sqlite_master WHERE type='table' AND name='user' ''');
+      if (tables.isEmpty) return [];
+
+      final userQuery = await _databaseInstance.rawQuery(''' SELECT * FROM user ''');
+
+      if (userQuery.isEmpty) {
+        return [];
+      }
+
+      final addressQuery = await _databaseInstance.rawQuery(''' SELECT * FROM address ''');
+
+      final users = <User>[];
+
+      for (final userMap in userQuery) {
+        final userId = userMap['id'] as int;
+        final addressMap = addressQuery.firstWhere(
+          (address) => address['id'] == userId,
+          orElse: () => {},
+        );
+
+        final address = addressMap.isNotEmpty ? Address.fromJson(addressMap as Map<String, dynamic>) : null;
+        User user = User.fromJson(userMap as Map<String, dynamic>);
+        user = user.copyWith(address: address);
+        users.add(user);
+      }
+
+      return users;
+    } on DatabaseException catch (_) {
+      throw StorageError(message: 'Erro durante consulta de todos os usuários no banco de dados.');
+    } finally {
+      await _databaseInstance.close();
+    }
+  }
+
+  @override
   Future<User?> updateData(int key, User data) async {
     try {
       _databaseInstance = await openDatabase(LocalStorage.LocalDb);
