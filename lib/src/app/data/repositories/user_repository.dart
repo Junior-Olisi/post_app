@@ -4,6 +4,8 @@ import 'package:post_app/src/app/data/errors/user/user_error.dart';
 import 'package:post_app/src/app/data/interfaces/ilocal_storage_service.dart';
 import 'package:post_app/src/app/data/interfaces/iuser_repository.dart';
 import 'package:post_app/src/app/domain/entities/user/user.dart';
+import 'package:post_app/src/app/domain/entities/user/user_list.dart';
+import 'package:post_app/src/app/domain/enums/source_type.dart';
 import 'package:post_app/src/app/shared/backend/api_parameters.dart';
 import 'package:result_dart/result_dart.dart';
 
@@ -14,12 +16,29 @@ class UserRepository implements IUserRepository {
   final IlocalStorageService<User> _localStorage;
 
   @override
-  AsyncResult<List<User>> getUsers() async {
+  AsyncResult<UserList> getUsers() async {
     try {
+      final localUsersList = await _localStorage.getAllData();
+
+      if (localUsersList.isNotEmpty) {
+        final userList = UserList(users: localUsersList, source: SourceType.cache);
+        return Success(userList);
+      }
+
       final result = await _dio.get('${ApiParameters.jsonPlaceholderApiUrl}/users');
-      final userMapsList = result.data as List<Map<String, dynamic>>;
-      final users = userMapsList.map(User.fromJson).toList();
-      return Success(users);
+      final userMapsList = result.data as List;
+
+      List<User> users = [];
+
+      for (var map in userMapsList) {
+        map = map as Map<String, dynamic>;
+
+        users.add(User.fromJson(map));
+      }
+
+      final userList = UserList(users: users);
+
+      return Success(userList);
     } on DioException catch (e) {
       return Failure(UserError(message: e.message ?? ''));
     } on Exception catch (_) {
@@ -33,7 +52,7 @@ class UserRepository implements IUserRepository {
       final result = await _dio.get('${ApiParameters.randomUserApiUrl}/?seed=${user.id}&inc=picture&results=1');
 
       final response = result.data as Map<String, dynamic>;
-      final resultsResponseField = response['results'] as List<Map<String, dynamic>>;
+      final resultsResponseField = response['results'] as List;
       final userPictureMap = resultsResponseField.first['picture'];
       final userImageUrl = userPictureMap['large'];
 

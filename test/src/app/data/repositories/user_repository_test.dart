@@ -9,6 +9,7 @@ import 'package:post_app/src/app/data/interfaces/ilocal_storage_service.dart';
 import 'package:post_app/src/app/data/interfaces/iuser_repository.dart';
 import 'package:post_app/src/app/data/repositories/user_repository.dart';
 import 'package:post_app/src/app/domain/entities/user/user.dart';
+import 'package:post_app/src/app/domain/entities/user/user_list.dart';
 
 import '../../../../mocks/dependency_mocks.dart';
 import '../../../../mocks/user_mocks.dart';
@@ -27,7 +28,6 @@ void main() {
     () {
       dio = DioMock();
       storage = UserLocalStorageServiceMock();
-      when(() => storage.saveData(any(), any())).thenAnswer((_) async {});
       repository = UserRepository(dio, storage);
     },
   );
@@ -36,6 +36,8 @@ void main() {
     'getUsers should',
     () {
       test('fail when any http error occurs (returns a failure with UserError object).', () async {
+        when(() => storage.getAllData()).thenAnswer((_) async => []);
+
         when(() => dio.get(any())).thenThrow(
           DioException(
             requestOptions: RequestOptions(),
@@ -63,6 +65,8 @@ void main() {
       });
 
       test('fail when any unknow error occurs (also returns a failure with UserError object).', () async {
+        when(() => storage.getAllData()).thenAnswer((_) async => []);
+
         when(() => dio.get(any())).thenThrow(
           Exception('Erro desconhecido ao realizar requisição http.'),
         );
@@ -83,6 +87,8 @@ void main() {
       });
 
       test('fail when any unknow error occurs (also returns a failure with UserError object).', () async {
+        when(() => storage.getAllData()).thenAnswer((_) async => []);
+
         when(() => dio.get(any())).thenThrow(
           Exception('Erro desconhecido ao realizar requisição http.'),
         );
@@ -103,6 +109,8 @@ void main() {
       });
 
       test('return a List<User> successfully.', () async {
+        when(() => storage.getAllData()).thenAnswer((_) async => []);
+
         when(() => dio.get(any())).thenAnswer(
           (_) async => Response(
             statusCode: HttpStatus.ok,
@@ -115,8 +123,8 @@ void main() {
 
         result.fold(
           (value) {
-            expect(value, isA<List<User>>());
-            expect(value, isNotEmpty);
+            expect(value, isA<UserList>());
+            expect(value.users, isNotEmpty);
           },
           (failure) => expect(failure, isNull),
         );
