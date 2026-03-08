@@ -35,8 +35,8 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SizedBox(
-                width: 120,
-                height: 120,
+                width: size.height * 0.115,
+                height: size.height * 0.115,
                 child: Image.asset(
                   logoImage,
                   fit: BoxFit.contain,

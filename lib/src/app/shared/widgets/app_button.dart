@@ -20,7 +20,7 @@ class AppButton extends StatelessWidget {
       ),
       child: Text(
         text,
-        style: Theme.of(context).textTheme.bodyLarge,
+        style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white),
       ),
     );
   }

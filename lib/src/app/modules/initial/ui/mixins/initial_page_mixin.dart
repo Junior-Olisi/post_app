@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:post_app/src/app/modules/initial/ui/view_models/user_view_model.dart';
 import 'package:post_app/src/app/shared/routes/user_module_routes.dart';
+import 'package:post_app/src/app/shared/widgets/user_tile.dart';
 
 mixin InitialPageMixin<T extends StatefulWidget> on State<T> {
   final userViewModel = Modular.get<UserViewModel>();
@@ -28,25 +29,13 @@ mixin InitialPageMixin<T extends StatefulWidget> on State<T> {
           child: ListView(
             children: userViewModel.usersList
                 .map(
-                  (user) => ListTile(
-                    leading: CircleAvatar(
-                      backgroundImage: NetworkImage(
-                        user.profileImage ?? '',
-                      ),
-                    ),
-                    title: Text(
-                      user.name,
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    subtitle: Text(
-                      '@${user.username}',
-                      style: Theme.of(context).textTheme.labelSmall,
-                    ),
+                  (user) => UserTile(
+                    user: user,
                     onTap: () {
                       userViewModel.primaryUser = user;
-
-                      Modular.to.navigate('${UserModuleRoutes.HOME_PAGE}/${user.id}');
+                      Modular.to.navigate(UserModuleRoutes.HOME_PAGE);
                     },
+                    tileType: UserTileType.small,
                   ),
                 )
                 .toList(),
