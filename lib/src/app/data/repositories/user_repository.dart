@@ -40,7 +40,7 @@ class UserRepository implements IUserRepository {
 
       return Success(userList);
     } on DioException catch (e) {
-      return Failure(UserError(message: e.message ?? ''));
+      return Failure(UserError(message: e.message ?? 'Erro ao buscar usuários'));
     } on Exception catch (_) {
       return Failure(UserError(message: 'Erro desconhecido ao realizar requisição http.'));
     }

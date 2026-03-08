@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
 class AppContainer extends StatelessWidget {
-  const AppContainer({required this.child, super.key});
+  const AppContainer({required this.child, this.floatingActionButton, super.key});
 
   final Widget child;
+  final Widget? floatingActionButton;
 
   @override
   Widget build(BuildContext context) {
@@ -19,6 +20,7 @@ class AppContainer extends StatelessWidget {
         ),
         child: child,
       ),
+      floatingActionButton: floatingActionButton,
     );
   }
 }

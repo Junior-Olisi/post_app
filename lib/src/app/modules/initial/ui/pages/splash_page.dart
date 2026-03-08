@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:post_app/src/app/modules/initial/ui/mixins/splash_page_mixin.dart';
 import 'package:post_app/src/app/shared/widgets/app_button.dart';
+import 'package:post_app/src/app/shared/widgets/app_container.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -25,9 +26,8 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
         ? 'assets/logo/light_logo.png' //
         : 'assets/logo/dark_logo.png';
 
-    return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: FadeTransition(
+    return AppContainer(
+      child: FadeTransition(
         opacity: fadeAnimation,
         child: Center(
           child: Column(

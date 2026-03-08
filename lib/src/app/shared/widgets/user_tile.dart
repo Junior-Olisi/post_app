@@ -27,7 +27,7 @@ class UserTile extends StatelessWidget {
         ),
         title: Text(
           user.name,
-          style: Theme.of(context).textTheme.titleSmall,
+          style: Theme.of(context).textTheme.titleMedium,
         ),
         onTap: onTap,
       ),
