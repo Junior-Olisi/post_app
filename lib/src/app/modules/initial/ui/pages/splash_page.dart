@@ -18,7 +18,11 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
-    final logoImage = Theme.of(context).brightness == Brightness.light ? 'assets/logo/light_logo.png' : 'assets/logo/dark_logo.png';
+    final size = MediaQuery.sizeOf(context);
+
+    final logoImage = Theme.of(context).brightness == Brightness.light
+        ? 'assets/logo/light_logo.png' //
+        : 'assets/logo/dark_logo.png';
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -26,6 +30,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
         opacity: fadeAnimation,
         child: Center(
           child: Column(
+            spacing: size.height * 0.024,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SizedBox(
@@ -35,6 +40,37 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
                   logoImage,
                   fit: BoxFit.contain,
                 ),
+              ),
+              AnimatedBuilder(
+                animation: Listenable.merge(
+                  [
+                    userViewModel.getAllUsersCommand,
+                    showRetryButton,
+                  ],
+                ),
+                builder: (_, __) {
+                  final isLoadingState = userViewModel.getAllUsersCommand.value.isRunning;
+
+                  return isLoadingState
+                      ? Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      : Visibility(
+                          visible: showRetryButton.value,
+                          replacement: Container(),
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              await userViewModel.getAllUsersCommand.execute();
+                            },
+                            style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                            ),
+                            child: Text('Tentar Novamente'),
+                          ),
+                        );
+                },
               ),
             ],
           ),
