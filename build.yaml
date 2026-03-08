@@ -1,0 +1,9 @@
+targets:
+  $default:
+    sources:
+      include:
+        - lib/**
+        - pubspec.yaml
+      exclude:
+        - lib/**.freezed.dart
+        - lib/**.g.dart
