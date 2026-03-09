@@ -238,4 +238,122 @@ void main() {
       });
     },
   );
+
+  group(
+    'createPost should',
+    () {
+      test('fail when http error occurs during post creation.', () async {
+        when(() => dio.post(any(), data: any(named: 'data'))).thenThrow(
+          DioException(
+            requestOptions: RequestOptions(),
+            response: Response(
+              requestOptions: RequestOptions(),
+              statusCode: HttpStatus.badRequest,
+            ),
+            message: 'Erro ao criar post.',
+          ),
+        );
+
+        final result = await repository.createPost(newPostMock);
+
+        result.fold(
+          (value) => expect(value, isNull),
+          (failure) => expect(
+            failure,
+            isA<PostError>().having(
+              (error) => error.message,
+              'Http error message',
+              equals('Erro ao criar post.'),
+            ),
+          ),
+        );
+      });
+
+      test('fail when storage save error occurs (returns a failure with PostError object).', () async {
+        when(() => dio.post(any(), data: any(named: 'data'))).thenAnswer(
+          (_) async => Response(
+            requestOptions: RequestOptions(),
+            statusCode: HttpStatus.created,
+          ),
+        );
+        when(() => storage.saveData(any(), any())).thenThrow(StorageError(message: 'Erro ao salvar post localmente.'));
+
+        final result = await repository.createPost(newPostMock);
+
+        result.fold(
+          (value) => expect(value, isNull),
+          (failure) => expect(
+            failure,
+            isA<PostError>().having(
+              (error) => error.message,
+              'Storage error message',
+              equals('Erro ao salvar post localmente.'),
+            ),
+          ),
+        );
+      });
+
+      test('fail when unknown error occurs.', () async {
+        when(() => dio.post(any(), data: any(named: 'data'))).thenAnswer(
+          (_) async => Response(
+            requestOptions: RequestOptions(),
+            statusCode: HttpStatus.created,
+          ),
+        );
+        when(() => storage.saveData(any(), any())).thenAnswer((_) => Future.value());
+        when(() => storage.getData(any())).thenThrow(Exception());
+
+        final result = await repository.createPost(newPostMock);
+
+        result.fold(
+          (value) => expect(value, isNull),
+          (failure) => expect(
+            failure,
+            isA<PostError>().having(
+              (error) => error.message,
+              'Generic error message',
+              equals('Erro desconhecido ao criar novo post.'),
+            ),
+          ),
+        );
+      });
+
+      test('return a post successfully after saving it locally (returns a Post object).', () async {
+        when(() => dio.post(any(), data: any(named: 'data'))).thenAnswer(
+          (_) async => Response(
+            requestOptions: RequestOptions(),
+            statusCode: HttpStatus.created,
+          ),
+        );
+        when(() => storage.saveData(any(), any())).thenAnswer((_) => Future.value());
+        when(() => storage.getData(any())).thenAnswer((_) async => postMock);
+
+        final result = await repository.createPost(newPostMock);
+
+        result.fold(
+          (post) {
+            expect(post, isNotNull);
+            expect(post, isA<Post>().having((postData) => postData.id, 'post id', post.id));
+            expect(
+              post,
+              isA<Post>().having(
+                (postData) => postData.title,
+                'post title',
+                'Test Post',
+              ),
+            );
+            expect(
+              post,
+              isA<Post>().having(
+                (postData) => postData.body,
+                'post body',
+                'This is a test post body',
+              ),
+            );
+          },
+          (failure) => expect(failure, isNull),
+        );
+      });
+    },
+  );
 }

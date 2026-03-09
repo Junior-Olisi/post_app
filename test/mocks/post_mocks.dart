@@ -1,3 +1,4 @@
+import 'package:post_app/src/app/data/dtos/post/new_post_dto.dart';
 import 'package:post_app/src/app/domain/entities/post/post.dart';
 
 final postMapsList = <Map<String, dynamic>>[
@@ -29,6 +30,8 @@ final postMock = Post(
   title: 'Test Post',
   body: 'This is a test post body',
 );
+
+final newPostMock = NewPostDto.empty();
 
 final postMockWithId2 = Post(
   userId: 1,

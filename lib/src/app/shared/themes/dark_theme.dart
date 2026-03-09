@@ -131,7 +131,7 @@ ThemeData darkTheme() {
       ),
       focusedErrorBorder: OutlineInputBorder(
         borderSide: const BorderSide(
-          color: AppColors.darkPrimary,
+          color: Colors.red,
           width: 2,
         ),
       ),

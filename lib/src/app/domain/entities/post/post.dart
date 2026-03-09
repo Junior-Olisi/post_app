@@ -11,6 +11,7 @@ abstract class Post with _$Post {
     required int id,
     required String title,
     required String body,
+    @Default(false) bool markAsExcluded,
     User? postOwner,
     @Default(false) bool hasUserLike,
   }) = _Post;

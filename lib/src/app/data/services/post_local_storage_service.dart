@@ -20,6 +20,7 @@ class PostLocalStorageService implements IlocalStorageService<Post> {
                 userId INTEGER NOT NULL,
                 title TEXT NOT NULL,
                 body TEXT NOT NULL,
+                markAsExcluded INTEGER NOT NULL DEFAULT 0,
                 hasUserLike INTEGER NOT NULL DEFAULT 0
               );
             ''',
@@ -37,10 +38,10 @@ class PostLocalStorageService implements IlocalStorageService<Post> {
           if (resultRow.isEmpty) {
             await transaction.rawInsert(
               '''
-                INSERT INTO post(id, userId, title, body, hasUserLike)
-                VALUES(?, ?, ?, ?, ?)
+                INSERT INTO post(id, userId, title, body, markAsExcluded, hasUserLike)
+                VALUES(?, ?, ?, ?, ?, ?)
               ''',
-              [data.id, data.userId, data.title, data.body, data.hasUserLike ? 1 : 0],
+              [data.id, data.userId, data.title, data.body, data.markAsExcluded ? 1 : 0, data.hasUserLike ? 1 : 0],
             );
           }
         },
@@ -72,6 +73,7 @@ class PostLocalStorageService implements IlocalStorageService<Post> {
       }
 
       final row = Map<String, dynamic>.from(resultRow.first as Map<String, dynamic>);
+      row['markAsExcluded'] = (row['markAsExcluded'] as int) == 1;
       row['hasUserLike'] = (row['hasUserLike'] as int) == 1;
       final post = Post.fromJson(row);
 
@@ -105,6 +107,7 @@ class PostLocalStorageService implements IlocalStorageService<Post> {
 
       for (var row in resultRows) {
         final rowData = Map<String, dynamic>.from(row as Map<String, dynamic>);
+        rowData['markAsExcluded'] = (rowData['markAsExcluded'] as int) == 1;
         rowData['hasUserLike'] = (rowData['hasUserLike'] as int) == 1;
         final post = Post.fromJson(rowData);
         posts.add(post);
@@ -147,10 +150,11 @@ class PostLocalStorageService implements IlocalStorageService<Post> {
                 userId = ?,
                 title = ?,
                 body = ?,
+                markAsExcluded = ?,
                 hasUserLike = ?
               WHERE id = ?
             ''',
-            [data.userId, data.title, data.body, data.hasUserLike ? 1 : 0, key],
+            [data.userId, data.title, data.body, data.markAsExcluded ? 1 : 0, data.hasUserLike ? 1 : 0, key],
           );
         },
       );

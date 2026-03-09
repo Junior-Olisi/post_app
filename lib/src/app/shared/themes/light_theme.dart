@@ -125,7 +125,7 @@ ThemeData lightTheme() {
       ),
       errorBorder: OutlineInputBorder(
         borderSide: const BorderSide(
-          color: AppColors.lightPrimary,
+          color: Colors.red,
           width: 1,
         ),
       ),

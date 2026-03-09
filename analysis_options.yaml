@@ -8,6 +8,7 @@ analyzer:
     invalid_annotation_target: ignore
     implementation_imports: ignore
     constant_identifier_names: ignore
+    must_be_immutable: ignore
 
 linter:
   rules:
