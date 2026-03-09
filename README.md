@@ -51,13 +51,10 @@ Com o propósito de criar uma aplicação de fácil administração, bom proveit
 - Dependency Injection Pattern - Por meio de recursos da orientação a objetos, permite separar e organizar o código;
 - TDD (Test Driven Development) - Por meio de testes valida o funcionamento do código antes mesmo da execução da aplicação;
 
-Para uma melhor cobertura e validação, também serão realizados testes de integração para para as funcionalidades principais.
-
 ## Packages externos
 
 - [Flutter Modular](https://pub.dev/packages/flutter_modular) - Injeção de dependências e navegação;
 - [Dio](https://pub.dev/packages/dio) - Requisições HTTP, para o consumo das APIs;
-- [Connectivity Plus](https://pub.dev/packages/connectivity_plus) - Fornece nformações sobre a conexão com a internet;
 - [Freezed Annotation](https://pub.dev/packages/freezed#motivation) - Auxilia na definição dos modelos de entidade da aplicação;
 - [Result Dart](https://pub.dev/packages/result_dart) - Auxilia no tratamento de erros na aplicação;
 - [Lucid Validation](https://pub.dev/packages/lucid_validation) - Auxilia na criação de modelos de formulário;

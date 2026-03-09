@@ -48,7 +48,7 @@ class _HomePageState extends State<HomePage> with HomePageMixin {
                     UserTile(
                       user: widget.userViewModel.currentUser,
                       onTap: () {
-                        Modular.to.pushNamed(ProfileModuleRoutes.ROOT);
+                        Modular.to.pushNamed(ProfileModuleRoutes.PROFILE_PAGE, arguments: widget.userViewModel.currentUser);
                       },
                       tileType: UserTileType.large,
                     ),
@@ -85,13 +85,6 @@ class _HomePageState extends State<HomePage> with HomePageMixin {
                                   onTap: () {
                                     Modular.to.pushNamed(UserModuleRoutes.USER_SELECTION_PAGE);
                                   },
-                                ),
-                                PopupMenuItem(
-                                  child: Text(
-                                    'Todos',
-                                    style: Theme.of(context).textTheme.bodyLarge,
-                                  ),
-                                  onTap: () {},
                                 ),
                               ],
                             ),
@@ -132,19 +125,21 @@ class _HomePageState extends State<HomePage> with HomePageMixin {
                                       onTap: () {
                                         Modular.to.pushNamed(PostModuleRoutes.POST_PAGE, arguments: post);
                                       },
-                                      trailing: IconButton(
-                                        onPressed: () async {
-                                          await widget.postViewModel.likePostCommand.execute(post);
-                                        },
-                                        icon: post.hasUserLike
-                                            ? Icon(
-                                                FluentIcons.heart_12_filled,
-                                                color: Theme.of(context).colorScheme.primary,
-                                              )
-                                            : Icon(
-                                                FluentIcons.heart_12_regular,
-                                              ),
-                                      ),
+                                      trailing: widget.userViewModel.currentUser.userType == UserType.primary
+                                          ? IconButton(
+                                              onPressed: () async {
+                                                await widget.postViewModel.likePostCommand.execute(post);
+                                              },
+                                              icon: post.hasUserLike
+                                                  ? Icon(
+                                                      FluentIcons.heart_12_filled,
+                                                      color: Theme.of(context).colorScheme.primary,
+                                                    )
+                                                  : Icon(
+                                                      FluentIcons.heart_12_regular,
+                                                    ),
+                                            )
+                                          : null,
                                     );
                                   },
                                 ),

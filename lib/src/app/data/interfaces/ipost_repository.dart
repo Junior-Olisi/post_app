@@ -13,6 +13,6 @@ abstract interface class IPostRepository {
   AsyncResult<Post> updatePost(UpdatePostDto dto, Post post);
   AsyncResult<Post> getPost(int id);
   AsyncResult<int> deletePost(Post post);
-  AsyncResult<List<Comment>> getUserComments(int userId);
+  AsyncResult<List<Comment>> getUserComments(User user);
   AsyncResult<List<Comment>> getPostComments(Post post);
 }

@@ -99,4 +99,18 @@ class UserRepository implements IUserRepository {
       return Failure(UserError(message: 'Erro ao salvar usuário selecionado.'));
     }
   }
+
+  @override
+  AsyncResult<User> exitFromProfileSearch() async {
+    try {
+      final usersList = await _localStorage.getAllData();
+      final primaryUser = usersList.where((user) => user.userType == UserType.primary).first;
+
+      return Success(primaryUser);
+    } on ApplicationError catch (e) {
+      return Failure(UserError(message: e.message));
+    } on Exception catch (_) {
+      return Failure(UserError(message: 'Erro ao localizar usuário primário.'));
+    }
+  }
 }

@@ -6,12 +6,14 @@ class UserTile extends StatelessWidget {
     required this.user,
     required this.onTap,
     required this.tileType,
+    this.trailing,
     super.key,
   });
 
   final User user;
   final void Function()? onTap;
   final UserTileType tileType;
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
@@ -74,6 +76,7 @@ class UserTile extends StatelessWidget {
           ],
         ),
         onTap: onTap,
+        trailing: trailing,
       ),
     };
   }

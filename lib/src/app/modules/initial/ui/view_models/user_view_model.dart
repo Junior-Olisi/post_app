@@ -16,6 +16,7 @@ class UserViewModel {
   late final mergeUserDataCommand = Command1(_mergeUserData);
   late final savePrimaryUserCommand = Command1(_savePrimaryUser);
   late final selectSecondaryUserProfileCommand = Command1(_selectSecondaryUserProfile);
+  late final exitFromProfileSearchCommand = Command0(_exitFromProfileSearch);
 
   AsyncResult<UserList> _getAllUsers() {
     return _repository.getUsers();
@@ -31,5 +32,9 @@ class UserViewModel {
 
   AsyncResult<User> _selectSecondaryUserProfile(User user) {
     return _repository.selectSecondaryUserProfile(user);
+  }
+
+  AsyncResult<User> _exitFromProfileSearch() {
+    return _repository.exitFromProfileSearch();
   }
 }

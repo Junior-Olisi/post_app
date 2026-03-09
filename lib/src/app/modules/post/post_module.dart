@@ -10,7 +10,7 @@ class PostModule extends Module {
   void routes(RouteManager r) {
     r.child(
       '${PostModuleRoutes.POST_MANAGEMENT_PAGE}/:mode',
-      child: (args) => PostManagementPage(
+      child: (context) => PostManagementPage(
         userViewModel: Modular.get<UserViewModel>(),
         postViewModel: Modular.get<PostViewModel>(),
         post: r.args.data,
@@ -19,7 +19,7 @@ class PostModule extends Module {
 
     r.child(
       PostModuleRoutes.POST_PAGE,
-      child: (args) => PostPage(
+      child: (context) => PostPage(
         userViewModel: Modular.get<UserViewModel>(),
         postViewModel: Modular.get<PostViewModel>(),
         post: r.args.data,

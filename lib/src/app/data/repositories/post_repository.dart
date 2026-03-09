@@ -189,9 +189,9 @@ class PostRepository implements IPostRepository {
   }
 
   @override
-  AsyncResult<List<Comment>> getUserComments(int userId) async {
+  AsyncResult<List<Comment>> getUserComments(User user) async {
     try {
-      final response = await _dio.get('${ApiParameters.jsonPlaceholderApiUrl}/users/$userId/comments');
+      final response = await _dio.get('${ApiParameters.jsonPlaceholderApiUrl}/users/${user.id}/comments');
       final commentMapsList = response.data as List;
       List<Comment> comments = [];
 

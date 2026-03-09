@@ -17,6 +17,7 @@ class PostViewModel {
   late ValueNotifier<List<Post>> userPostsList = ValueNotifier([]);
   late ValueNotifier<List<Post>> preferedPostsList = ValueNotifier([]);
   late ValueNotifier<List<Comment>> postCommentsList = ValueNotifier([]);
+  late ValueNotifier<List<Comment>> userCommentsList = ValueNotifier([]);
 
   late final getUserPostsCommand = Command1(_getUserPosts);
   late final likePostCommand = Command1(_likePost);
@@ -24,6 +25,7 @@ class PostViewModel {
   late final updatePostCommand = Command2(_updatePost);
   late final deletePostCommand = Command1(_deletePost);
   late final getPostCommentsCommand = Command1(_getPostComments);
+  late final getUserCommentsCommand = Command1(_getUserComments);
 
   AsyncResult<PostList> _getUserPosts(User user) {
     return _repository.getUserPosts(user);
@@ -47,5 +49,9 @@ class PostViewModel {
 
   AsyncResult<List<Comment>> _getPostComments(Post post) {
     return _repository.getPostComments(post);
+  }
+
+  AsyncResult<List<Comment>> _getUserComments(User user) {
+    return _repository.getUserComments(user);
   }
 }
