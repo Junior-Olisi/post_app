@@ -131,7 +131,7 @@ ThemeData lightTheme() {
       ),
       focusedErrorBorder: OutlineInputBorder(
         borderSide: const BorderSide(
-          color: AppColors.lightPrimary,
+          color: Colors.red,
           width: 2,
         ),
       ),
@@ -142,7 +142,7 @@ ThemeData lightTheme() {
         color: AppColors.lightTextSecondary,
       ),
       errorStyle: AppTypography.bodySmall.copyWith(
-        color: AppColors.lightPrimary,
+        color: Colors.red,
       ),
     ),
     iconTheme: const IconThemeData(

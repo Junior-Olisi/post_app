@@ -125,7 +125,7 @@ ThemeData darkTheme() {
       ),
       errorBorder: OutlineInputBorder(
         borderSide: const BorderSide(
-          color: AppColors.darkPrimary,
+          color: Colors.red,
           width: 1,
         ),
       ),
@@ -142,7 +142,7 @@ ThemeData darkTheme() {
         color: AppColors.darkTextSecondary,
       ),
       errorStyle: AppTypography.bodySmall.copyWith(
-        color: AppColors.darkPrimary,
+        color: Colors.red,
       ),
     ),
     iconTheme: const IconThemeData(

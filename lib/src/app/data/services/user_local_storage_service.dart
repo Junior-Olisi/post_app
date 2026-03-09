@@ -97,14 +97,14 @@ class UserLocalStorageService implements IlocalStorageService<User> {
             ''',
             [
               data.id,
-              data.address?.street ?? 'default value for street',
-              data.address?.suite ?? 'default value for suite',
-              data.address?.city ?? 'default value for city',
+              data.address!.street,
+              data.address!.suite,
+              data.address!.city,
             ],
           );
         },
       );
-    } on DatabaseException catch (_) {
+    } on DatabaseException catch (e) {
       throw StorageError(message: 'Erro durante inserção no banco de dados.');
     } finally {
       await _databaseInstance.close();

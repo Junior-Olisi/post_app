@@ -33,8 +33,6 @@ class PostRepository implements IPostRepository {
           final postList = PostList(posts: userPosts, source: SourceType.cache);
           return Success(postList);
         }
-
-        return Failure(PostError(message: 'Erro ao buscar posts de usuário'));
       }
 
       final result = await _dio.get('${ApiParameters.jsonPlaceholderApiUrl}/users/${user.id}/posts');

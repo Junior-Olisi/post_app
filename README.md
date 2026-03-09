@@ -63,5 +63,5 @@ Com o propósito de criar uma aplicação de fácil administração, bom proveit
 
 - Administração de perfil de usuário;
 - Gerenciamento de posts (criação, remoção, atualização, opção de curtir);
-- Monitoramento de atividade do perfil principal (Posts preferidos, comentários feitos);
+- Monitoramento de atividade do perfil principal (Comentários feitos);
 - Visualização de perfis de outros usuários

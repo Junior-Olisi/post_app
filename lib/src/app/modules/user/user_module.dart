@@ -1,6 +1,7 @@
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:post_app/src/app/modules/initial/ui/view_models/post_view_model.dart';
 import 'package:post_app/src/app/modules/initial/ui/view_models/user_view_model.dart';
+import 'package:post_app/src/app/modules/user/pages/add_user_page.dart';
 import 'package:post_app/src/app/modules/user/pages/user_selection_page.dart';
 import 'package:post_app/src/app/shared/routes/user_module_routes.dart';
 
@@ -17,12 +18,17 @@ class UserModule extends Module {
       ),
       transition: TransitionType.fadeIn,
     );
-
     r.child(
       UserModuleRoutes.USER_SELECTION_PAGE,
       child: (context) => UserSelectionPage(
         userViewModel: Modular.get<UserViewModel>(),
         postViewModel: Modular.get<PostViewModel>(),
+      ),
+    );
+    r.child(
+      UserModuleRoutes.ADD_USER_PAGE,
+      child: (context) => AddUserPage(
+        userViewModel: Modular.get<UserViewModel>(),
       ),
     );
   }

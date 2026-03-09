@@ -36,9 +36,15 @@ class _HomePageState extends State<HomePage> with HomePageMixin {
             )
           : null,
       child: AnimatedBuilder(
-        animation: widget.postViewModel.userPostsList,
+        animation: Listenable.merge([
+          widget.userViewModel.exitFromProfileSearchCommand,
+          widget.postViewModel.userPostsList,
+        ]),
         builder: (_, __) {
-          return widget.postViewModel.userPostsList.value.isEmpty
+          final hasLoadingState =
+              widget.postViewModel.userPostsList.value.isEmpty || //
+              widget.userViewModel.exitFromProfileSearchCommand.value.isRunning;
+          return hasLoadingState
               ? Center(
                   child: CircularProgressIndicator(),
                 )

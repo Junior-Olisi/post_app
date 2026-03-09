@@ -1,8 +1,10 @@
 import 'package:dio/dio.dart';
+import 'package:post_app/src/app/data/dtos/user/new_user_dto.dart';
 import 'package:post_app/src/app/data/errors/application_error.dart';
 import 'package:post_app/src/app/data/errors/user/user_error.dart';
 import 'package:post_app/src/app/data/interfaces/ilocal_storage_service.dart';
 import 'package:post_app/src/app/data/interfaces/iuser_repository.dart';
+import 'package:post_app/src/app/domain/entities/user/address.dart';
 import 'package:post_app/src/app/domain/entities/user/user.dart';
 import 'package:post_app/src/app/domain/entities/user/user_list.dart';
 import 'package:post_app/src/app/domain/enums/source_type.dart';
@@ -15,6 +17,44 @@ class UserRepository implements IUserRepository {
 
   final Dio _dio;
   final IlocalStorageService<User> _localStorage;
+
+  @override
+  AsyncResult<User> addUser(NewUserDto dto) async {
+    try {
+      final usersList = await _localStorage.getAllData();
+      int userCount = usersList.length + 10;
+      final userId = userCount++;
+      User newUser = User(
+        id: userId,
+        name: dto.name,
+        username: dto.username,
+        email: dto.email,
+        phone: dto.phone,
+        website: dto.website,
+        address: Address(
+          street: dto.address.street,
+          suite: dto.address.suite,
+          city: dto.address.city,
+        ),
+      );
+
+      final result = await _dio.get('${ApiParameters.randomUserApiUrl}/?seed=$userId&inc=picture&results=1');
+      final response = result.data as Map<String, dynamic>;
+      final resultsResponseField = response['results'] as List;
+      final userPictureMap = resultsResponseField.first['picture'];
+      final userImageUrl = userPictureMap['large'];
+
+      newUser = newUser.copyWith(profileImage: userImageUrl);
+
+      await _localStorage.saveData(userId, newUser);
+
+      return Success(newUser);
+    } on ApplicationError catch (e) {
+      return Failure(UserError(message: e.message));
+    } on Exception catch (_) {
+      return Failure(UserError(message: 'Erro desconhecido ao criar usuário.'));
+    }
+  }
 
   @override
   AsyncResult<UserList> getUsers() async {
