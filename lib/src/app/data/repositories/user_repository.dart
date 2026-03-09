@@ -6,6 +6,7 @@ import 'package:post_app/src/app/data/interfaces/iuser_repository.dart';
 import 'package:post_app/src/app/domain/entities/user/user.dart';
 import 'package:post_app/src/app/domain/entities/user/user_list.dart';
 import 'package:post_app/src/app/domain/enums/source_type.dart';
+import 'package:post_app/src/app/domain/enums/user_type.dart';
 import 'package:post_app/src/app/shared/backend/api_parameters.dart';
 import 'package:result_dart/result_dart.dart';
 
@@ -32,8 +33,12 @@ class UserRepository implements IUserRepository {
 
       for (var map in userMapsList) {
         map = map as Map<String, dynamic>;
+        User user = User.fromJson(map);
+        final mergeResult = await mergeUserData(user);
 
-        users.add(User.fromJson(map));
+        mergeResult.fold((mergedUser) {
+          users.add(mergedUser);
+        }, (_) => null);
       }
 
       final userList = UserList(users: users);
@@ -66,6 +71,19 @@ class UserRepository implements IUserRepository {
       return Failure(UserError(message: e.message));
     } on Exception catch (_) {
       return Failure(UserError(message: 'Erro desconhecido ao realizar operação com dados do usuário.'));
+    }
+  }
+
+  @override
+  AsyncResult<User> savePrimaryUser(User user) async {
+    try {
+      final primaryUser = user.copyWith(userType: UserType.primary);
+      await _localStorage.updateData(primaryUser.id, primaryUser);
+      return Success(primaryUser);
+    } on ApplicationError catch (e) {
+      return Failure(UserError(message: e.message));
+    } on Exception catch (_) {
+      return Failure(UserError(message: 'Erro ao salvar usuário primário.'));
     }
   }
 }

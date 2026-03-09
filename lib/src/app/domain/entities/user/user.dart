@@ -16,7 +16,7 @@ abstract class User with _$User {
     required String website,
     Address? address,
     String? profileImage,
-    @Default(UserType.primary) UserType userType,
+    @Default(UserType.none) UserType userType,
   }) = _User;
 
   factory User.fromJson(Map<String, dynamic> map) => _$UserFromJson(map);

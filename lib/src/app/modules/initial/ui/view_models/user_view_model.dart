@@ -15,6 +15,7 @@ class UserViewModel {
 
   late final getAllUsersCommand = Command0(_getAllUsers);
   late final mergeUserDataCommand = Command1(_mergeUserData);
+  late final savePrimaryUserCommand = Command1(_savePrimaryUser);
 
   AsyncResult<UserList> _getAllUsers() {
     return _repository.getUsers();
@@ -22,5 +23,9 @@ class UserViewModel {
 
   AsyncResult<User> _mergeUserData(User user) {
     return _repository.mergeUserData(user);
+  }
+
+  AsyncResult<User> _savePrimaryUser(User user) {
+    return _repository.savePrimaryUser(user);
   }
 }

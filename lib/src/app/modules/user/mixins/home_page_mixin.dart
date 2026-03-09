@@ -30,7 +30,15 @@ mixin HomePageMixin<T extends StatefulWidget> on State<HomePage> {
     }
 
     if (result is SuccessCommand<PostList>) {
-      widget.postViewModel.userPostsList.value = result.value.posts;
+      List<Post> userPosts = [];
+
+      for (Post post in result.value.posts) {
+        final user = widget.userViewModel.primaryUser;
+        post = post.copyWith(postOwner: user);
+        userPosts.add(post);
+      }
+
+      widget.postViewModel.userPostsList.value = userPosts;
     }
   }
 

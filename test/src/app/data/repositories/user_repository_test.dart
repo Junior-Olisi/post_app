@@ -29,6 +29,9 @@ void main() {
       dio = DioMock();
       storage = UserLocalStorageServiceMock();
       repository = UserRepository(dio, storage);
+
+      when(() => storage.getAllData()).thenAnswer((_) async => []);
+      when(() => storage.updateData(any(), any())).thenAnswer((_) async => userMock);
     },
   );
 
@@ -111,13 +114,27 @@ void main() {
       test('return a List<User> successfully.', () async {
         when(() => storage.getAllData()).thenAnswer((_) async => []);
 
+        var callCount = 0;
         when(() => dio.get(any())).thenAnswer(
-          (_) async => Response(
-            statusCode: HttpStatus.ok,
-            data: userMapsList,
-            requestOptions: RequestOptions(),
-          ),
+          (_) async {
+            callCount++;
+            if (callCount == 1) {
+              return Response(
+                statusCode: HttpStatus.ok,
+                data: userMapsList,
+                requestOptions: RequestOptions(),
+              );
+            } else {
+              return Response(
+                statusCode: HttpStatus.ok,
+                data: randoUserMap,
+                requestOptions: RequestOptions(),
+              );
+            }
+          },
         );
+
+        when(() => storage.saveData(any(), any())).thenAnswer((_) async => Future.value());
 
         final result = await repository.getUsers();
 
@@ -246,6 +263,99 @@ void main() {
             },
             (failure) => expect(failure, isNull),
           );
+        },
+      );
+    },
+  );
+
+  group(
+    'savePrimaryUser should',
+    () {
+      test(
+        'save user locally with userType set to primary',
+        () async {
+          when(() => storage.updateData(any(), any())).thenAnswer((_) async => userMock);
+
+          final result = await repository.savePrimaryUser(userMock);
+
+          result.fold(
+            (value) {
+              expect(
+                value,
+                isA<User>()
+                    .having(
+                      (user) => user.id,
+                      'User id',
+                      userMock.id,
+                    )
+                    .having(
+                      (user) => user.userType.name,
+                      'User type',
+                      'primary',
+                    ),
+              );
+            },
+            (failure) => expect(failure, isNull),
+          );
+        },
+      );
+
+      test(
+        'fail when storage error occurs (returns a failure with UserError object)',
+        () async {
+          when(() => storage.updateData(any(), any())).thenThrow(
+            StorageError(
+              message: 'Erro ao atualizar usuário no banco de dados.',
+            ),
+          );
+
+          final result = await repository.savePrimaryUser(userMock);
+
+          result.fold(
+            (value) => expect(value, isNull),
+            (failure) => expect(
+              failure,
+              isA<UserError>().having(
+                (userError) => userError.message,
+                'Storage error message',
+                'Erro ao atualizar usuário no banco de dados.',
+              ),
+            ),
+          );
+        },
+      );
+
+      test(
+        'fail when unknown error occurs (returns a failure with UserError object)',
+        () async {
+          when(() => storage.updateData(any(), any())).thenThrow(
+            Exception('Erro desconhecido'),
+          );
+
+          final result = await repository.savePrimaryUser(userMock);
+
+          result.fold(
+            (value) => expect(value, isNull),
+            (failure) => expect(
+              failure,
+              isA<UserError>().having(
+                (userError) => userError.message,
+                'Exception error message',
+                'Erro ao salvar usuário primário.',
+              ),
+            ),
+          );
+        },
+      );
+
+      test(
+        'call storage.updateData with correct parameters',
+        () async {
+          when(() => storage.updateData(any(), any())).thenAnswer((_) async => userMock);
+
+          await repository.savePrimaryUser(userMock);
+
+          verify(() => storage.updateData(userMock.id, any())).called(1);
         },
       );
     },
