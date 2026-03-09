@@ -1,11 +1,13 @@
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:post_app/src/app/domain/enums/user_type.dart';
 import 'package:post_app/src/app/modules/initial/ui/view_models/post_view_model.dart';
 import 'package:post_app/src/app/modules/initial/ui/view_models/user_view_model.dart';
 import 'package:post_app/src/app/modules/user/mixins/home_page_mixin.dart';
 import 'package:post_app/src/app/shared/routes/post_module_routes.dart';
 import 'package:post_app/src/app/shared/routes/profile_module_routes.dart';
+import 'package:post_app/src/app/shared/routes/user_module_routes.dart';
 import 'package:post_app/src/app/shared/widgets/app_container.dart';
 import 'package:post_app/src/app/shared/widgets/user_tile.dart';
 
@@ -25,12 +27,14 @@ class _HomePageState extends State<HomePage> with HomePageMixin {
     final size = MediaQuery.sizeOf(context);
 
     return AppContainer(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Modular.to.pushNamed('${PostModuleRoutes.POST_MANAGEMENT_PAGE}/?mode=create');
-        },
-        child: Icon(Icons.add),
-      ),
+      floatingActionButton: widget.userViewModel.currentUser.userType == UserType.primary
+          ? FloatingActionButton(
+              onPressed: () {
+                Modular.to.pushNamed('${PostModuleRoutes.POST_MANAGEMENT_PAGE}/?mode=create');
+              },
+              child: Icon(Icons.add),
+            )
+          : null,
       child: AnimatedBuilder(
         animation: widget.postViewModel.userPostsList,
         builder: (_, __) {
@@ -42,7 +46,7 @@ class _HomePageState extends State<HomePage> with HomePageMixin {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     UserTile(
-                      user: widget.userViewModel.primaryUser,
+                      user: widget.userViewModel.currentUser,
                       onTap: () {
                         Modular.to.pushNamed(ProfileModuleRoutes.ROOT);
                       },
@@ -57,37 +61,40 @@ class _HomePageState extends State<HomePage> with HomePageMixin {
                             'Meus Posts',
                             style: Theme.of(context).textTheme.headlineLarge,
                           ),
-                          PopupMenuButton(
-                            icon: Icon(Icons.filter_list),
-                            menuPadding: EdgeInsets.symmetric(horizontal: size.width * 0.036),
-                            itemBuilder: (_) => [
-                              PopupMenuItem(
-                                child: Text(
-                                  'Meus Posts',
-                                  style: Theme.of(context).textTheme.bodyLarge,
-                                ),
-                                onTap: () async {
-                                  final userId = widget.userViewModel.primaryUser.id;
+                          if (widget.userViewModel.currentUser.userType == UserType.primary)
+                            PopupMenuButton(
+                              icon: Icon(Icons.filter_list),
+                              menuPadding: EdgeInsets.symmetric(horizontal: size.width * 0.036),
+                              itemBuilder: (_) => [
+                                PopupMenuItem(
+                                  child: Text(
+                                    'Meus Posts',
+                                    style: Theme.of(context).textTheme.bodyLarge,
+                                  ),
+                                  onTap: () async {
+                                    final user = widget.userViewModel.currentUser;
 
-                                  await widget.postViewModel.getUserPostsCommand.execute(userId);
-                                },
-                              ),
-                              PopupMenuItem(
-                                child: Text(
-                                  'Selecionar Usuário',
-                                  style: Theme.of(context).textTheme.bodyLarge,
+                                    await widget.postViewModel.getUserPostsCommand.execute(user);
+                                  },
                                 ),
-                                onTap: () async {},
-                              ),
-                              PopupMenuItem(
-                                child: Text(
-                                  'Todos',
-                                  style: Theme.of(context).textTheme.bodyLarge,
+                                PopupMenuItem(
+                                  child: Text(
+                                    'Selecionar Usuário',
+                                    style: Theme.of(context).textTheme.bodyLarge,
+                                  ),
+                                  onTap: () {
+                                    Modular.to.pushNamed(UserModuleRoutes.USER_SELECTION_PAGE);
+                                  },
                                 ),
-                                onTap: () async {},
-                              ),
-                            ],
-                          ),
+                                PopupMenuItem(
+                                  child: Text(
+                                    'Todos',
+                                    style: Theme.of(context).textTheme.bodyLarge,
+                                  ),
+                                  onTap: () {},
+                                ),
+                              ],
+                            ),
                         ],
                       ),
                     ),
@@ -111,7 +118,7 @@ class _HomePageState extends State<HomePage> with HomePageMixin {
 
                                     return ListTile(
                                       title: UserTile(
-                                        user: widget.userViewModel.primaryUser,
+                                        user: widget.userViewModel.currentUser,
                                         onTap: null,
                                         tileType: UserTileType.minimal,
                                       ),

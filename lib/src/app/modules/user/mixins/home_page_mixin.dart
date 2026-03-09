@@ -9,12 +9,12 @@ mixin HomePageMixin<T extends StatefulWidget> on State<HomePage> {
   @override
   void initState() {
     super.initState();
-    final userId = widget.userViewModel.primaryUser.id;
+    final user = widget.userViewModel.currentUser;
 
     widget.postViewModel.getUserPostsCommand.addListener(getUserPostsListenable);
     widget.postViewModel.likePostCommand.addListener(likePostListenable);
 
-    widget.postViewModel.getUserPostsCommand.execute(userId);
+    widget.postViewModel.getUserPostsCommand.execute(user);
   }
 
   getUserPostsListenable() {
@@ -33,7 +33,7 @@ mixin HomePageMixin<T extends StatefulWidget> on State<HomePage> {
       List<Post> userPosts = [];
 
       for (Post post in result.value.posts) {
-        final user = widget.userViewModel.primaryUser;
+        final user = widget.userViewModel.currentUser;
         post = post.copyWith(postOwner: user);
         userPosts.add(post);
       }

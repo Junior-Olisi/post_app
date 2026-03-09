@@ -10,7 +10,9 @@ import 'package:post_app/src/app/data/interfaces/ipost_repository.dart';
 import 'package:post_app/src/app/domain/entities/post/comment.dart';
 import 'package:post_app/src/app/domain/entities/post/post.dart';
 import 'package:post_app/src/app/domain/entities/post/post_list.dart';
+import 'package:post_app/src/app/domain/entities/user/user.dart';
 import 'package:post_app/src/app/domain/enums/source_type.dart';
+import 'package:post_app/src/app/domain/enums/user_type.dart';
 import 'package:post_app/src/app/shared/backend/api_parameters.dart';
 import 'package:result_dart/result_dart.dart';
 
@@ -21,17 +23,21 @@ class PostRepository implements IPostRepository {
   final IlocalStorageService<Post> _localStorage;
 
   @override
-  AsyncResult<PostList> getUserPosts(int id) async {
+  AsyncResult<PostList> getUserPosts(User user) async {
     try {
-      final localPostsList = await _localStorage.getAllData();
+      if (user.userType == UserType.primary) {
+        final localPostsList = await _localStorage.getAllData();
 
-      if (localPostsList.isNotEmpty) {
-        final userPosts = localPostsList.where((post) => !post.markAsExcluded).toList();
-        final postList = PostList(posts: userPosts, source: SourceType.cache);
-        return Success(postList);
+        if (localPostsList.isNotEmpty) {
+          final userPosts = localPostsList.where((post) => !post.markAsExcluded).toList();
+          final postList = PostList(posts: userPosts, source: SourceType.cache);
+          return Success(postList);
+        }
+
+        return Failure(PostError(message: 'Erro ao buscar posts de usuário'));
       }
 
-      final result = await _dio.get('${ApiParameters.jsonPlaceholderApiUrl}/users/$id/posts');
+      final result = await _dio.get('${ApiParameters.jsonPlaceholderApiUrl}/users/${user.id}/posts');
       final postMapsList = result.data as List;
 
       List<Post> posts = [];

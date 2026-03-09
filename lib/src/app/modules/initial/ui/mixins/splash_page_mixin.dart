@@ -55,7 +55,7 @@ mixin SplashPageMixin<T extends StatefulWidget> on State<T> {
 
       if (primaryUserAlreadySaved) {
         final primaryUser = userViewModel.usersList.where((user) => user.userType == UserType.primary).first;
-        userViewModel.primaryUser = primaryUser;
+        userViewModel.currentUser = primaryUser;
         return Modular.to.navigate(UserModuleRoutes.HOME_PAGE);
       }
 

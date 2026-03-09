@@ -6,4 +6,5 @@ abstract interface class IUserRepository {
   AsyncResult<UserList> getUsers();
   AsyncResult<User> mergeUserData(User user);
   AsyncResult<User> savePrimaryUser(User user);
+  AsyncResult<User> selectSecondaryUserProfile(User user);
 }

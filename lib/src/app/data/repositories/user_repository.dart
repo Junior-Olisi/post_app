@@ -86,4 +86,17 @@ class UserRepository implements IUserRepository {
       return Failure(UserError(message: 'Erro ao salvar usuário primário.'));
     }
   }
+
+  @override
+  AsyncResult<User> selectSecondaryUserProfile(User user) async {
+    try {
+      final selectedUser = user.copyWith(userType: UserType.selected);
+      await _localStorage.updateData(selectedUser.id, selectedUser);
+      return Success(selectedUser);
+    } on ApplicationError catch (e) {
+      return Failure(UserError(message: e.message));
+    } on Exception catch (_) {
+      return Failure(UserError(message: 'Erro ao salvar usuário selecionado.'));
+    }
+  }
 }

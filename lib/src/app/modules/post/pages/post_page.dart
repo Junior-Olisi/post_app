@@ -36,7 +36,7 @@ class _PostPageState extends State<PostPage> with PostPageMixin {
         physics: BouncingScrollPhysics(),
         children: [
           UserTile(
-            user: widget.userViewModel.primaryUser,
+            user: widget.userViewModel.currentUser,
             onTap: null,
             tileType: UserTileType.large,
           ),

@@ -5,6 +5,7 @@ import 'package:post_app/src/app/data/interfaces/ipost_repository.dart';
 import 'package:post_app/src/app/domain/entities/post/comment.dart';
 import 'package:post_app/src/app/domain/entities/post/post.dart';
 import 'package:post_app/src/app/domain/entities/post/post_list.dart';
+import 'package:post_app/src/app/domain/entities/user/user.dart';
 import 'package:result_command/result_command.dart';
 import 'package:result_dart/result_dart.dart';
 
@@ -24,8 +25,8 @@ class PostViewModel {
   late final deletePostCommand = Command1(_deletePost);
   late final getPostCommentsCommand = Command1(_getPostComments);
 
-  AsyncResult<PostList> _getUserPosts(int id) {
-    return _repository.getUserPosts(id);
+  AsyncResult<PostList> _getUserPosts(User user) {
+    return _repository.getUserPosts(user);
   }
 
   AsyncResult<Post> _likePost(Post post) {

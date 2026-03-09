@@ -10,12 +10,12 @@ class UserViewModel {
   final IUserRepository _repository;
 
   late List<User> usersList = [];
-  late User primaryUser;
-  late User selectedUser;
+  late User currentUser;
 
   late final getAllUsersCommand = Command0(_getAllUsers);
   late final mergeUserDataCommand = Command1(_mergeUserData);
   late final savePrimaryUserCommand = Command1(_savePrimaryUser);
+  late final selectSecondaryUserProfileCommand = Command1(_selectSecondaryUserProfile);
 
   AsyncResult<UserList> _getAllUsers() {
     return _repository.getUsers();
@@ -27,5 +27,9 @@ class UserViewModel {
 
   AsyncResult<User> _savePrimaryUser(User user) {
     return _repository.savePrimaryUser(user);
+  }
+
+  AsyncResult<User> _selectSecondaryUserProfile(User user) {
+    return _repository.selectSecondaryUserProfile(user);
   }
 }

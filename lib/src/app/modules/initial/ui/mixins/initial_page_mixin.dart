@@ -72,7 +72,7 @@ mixin InitialPageMixin<T extends StatefulWidget> on State<InitialPage> {
     }
 
     if (result is SuccessCommand<User>) {
-      userViewModel.primaryUser = result.value;
+      userViewModel.currentUser = result.value;
 
       return Modular.to.navigate(UserModuleRoutes.HOME_PAGE);
     }

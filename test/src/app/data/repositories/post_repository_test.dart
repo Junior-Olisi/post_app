@@ -13,6 +13,7 @@ import 'package:post_app/src/app/domain/entities/post/post_list.dart';
 
 import '../../../../mocks/dependency_mocks.dart';
 import '../../../../mocks/post_mocks.dart';
+import '../../../../mocks/user_mocks.dart';
 
 void main() {
   setUpAll(() {
@@ -51,7 +52,7 @@ void main() {
           ),
         );
 
-        final result = await repository.getUserPosts(1);
+        final result = await repository.getUserPosts(userMock);
 
         result.fold(
           (value) => expect(value, isNull),
@@ -78,7 +79,7 @@ void main() {
           ),
         );
 
-        final result = await repository.getUserPosts(1);
+        final result = await repository.getUserPosts(userMock);
 
         result.fold(
           (value) => expect(value, isNull),
@@ -101,7 +102,7 @@ void main() {
           ),
         );
 
-        final result = await repository.getUserPosts(1);
+        final result = await repository.getUserPosts(userMock);
 
         result.fold(
           (value) => expect(value, isNull),
@@ -125,7 +126,7 @@ void main() {
           ),
         );
 
-        final result = await repository.getUserPosts(1);
+        final result = await repository.getUserPosts(userMock);
 
         result.fold(
           (success) => expect(

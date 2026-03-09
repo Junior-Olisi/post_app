@@ -80,7 +80,7 @@ class _PostManagementPageState extends State<PostManagementPage> with PostManage
               child: AppButton(
                 onPressed: () {
                   if (newPostValidator.validate(newPostDto).isValid) {
-                    newPostDto.userId = widget.userViewModel.primaryUser.id;
+                    newPostDto.userId = widget.userViewModel.currentUser.id;
                     widget.postViewModel.createPostCommand.execute(newPostDto);
                   }
                 },
