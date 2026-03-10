@@ -145,12 +145,27 @@ class UserRepository implements IUserRepository {
     try {
       final usersList = await _localStorage.getAllData();
       final primaryUser = usersList.where((user) => user.userType == UserType.primary).first;
+      User selectedUser = usersList.where((user) => user.userType == UserType.selected).first;
+      selectedUser = selectedUser.copyWith(userType: UserType.none);
+      await _localStorage.updateData(selectedUser.id, selectedUser);
 
       return Success(primaryUser);
     } on ApplicationError catch (e) {
       return Failure(UserError(message: e.message));
     } on Exception catch (_) {
       return Failure(UserError(message: 'Erro ao localizar usuário primário.'));
+    }
+  }
+
+  @override
+  AsyncResult<Unit> exitFromApplication() async {
+    try {
+      await _localStorage.deleteAllData();
+      return Success.unit();
+    } on ApplicationError catch (e) {
+      return Failure(UserError(message: e.message));
+    } on Exception catch (_) {
+      return Failure(UserError(message: 'Erro ao finalizar aplicação.'));
     }
   }
 }

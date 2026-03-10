@@ -26,7 +26,7 @@ class ProfilePage extends StatefulWidget {
   State<ProfilePage> createState() => _ProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> with ProfilePageMixin {
+class _ProfilePageState extends State<ProfilePage> with ProfilePageMixin<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
@@ -45,7 +45,11 @@ class _ProfilePageState extends State<ProfilePage> with ProfilePageMixin {
               tileType: UserTileType.large,
               trailing: IconButton(
                 onPressed: () async {
-                  await widget.userViewModel.exitFromProfileSearchCommand.execute();
+                  if (widget.user.userType == UserType.primary) {
+                    showApplicationClosingDialog();
+                  } else {
+                    await widget.userViewModel.exitFromProfileSearchCommand.execute();
+                  }
                 },
                 icon: Icon(
                   Icons.logout,
@@ -89,15 +93,6 @@ class _ProfilePageState extends State<ProfilePage> with ProfilePageMixin {
                 children: [
                   Column(
                     children: [
-                      if (widget.user.userType == UserType.primary)
-                        ListTile(
-                          contentPadding: EdgeInsets.zero,
-                          title: Text('Favoritos'),
-                          trailing: Icon(
-                            Icons.chevron_right_outlined,
-                          ),
-                          onTap: () {},
-                        ),
                       ListTile(
                         contentPadding: EdgeInsets.zero,
                         title: Text('Comentários'),

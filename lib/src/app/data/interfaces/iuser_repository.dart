@@ -10,4 +10,5 @@ abstract interface class IUserRepository {
   AsyncResult<User> savePrimaryUser(User user);
   AsyncResult<User> selectSecondaryUserProfile(User user);
   AsyncResult<User> exitFromProfileSearch();
+  AsyncResult<Unit> exitFromApplication();
 }

@@ -9,6 +9,7 @@ analyzer:
     implementation_imports: ignore
     constant_identifier_names: ignore
     must_be_immutable: ignore
+    avoid_print: ignore
 
 linter:
   rules:

@@ -38,11 +38,11 @@ class _HomePageState extends State<HomePage> with HomePageMixin {
       child: AnimatedBuilder(
         animation: Listenable.merge([
           widget.userViewModel.exitFromProfileSearchCommand,
-          widget.postViewModel.userPostsList,
+          widget.postViewModel.getUserPostsCommand,
         ]),
         builder: (_, __) {
           final hasLoadingState =
-              widget.postViewModel.userPostsList.value.isEmpty || //
+              widget.postViewModel.getUserPostsCommand.value.isRunning || //
               widget.userViewModel.exitFromProfileSearchCommand.value.isRunning;
           return hasLoadingState
               ? Center(
@@ -108,46 +108,57 @@ class _HomePageState extends State<HomePage> with HomePageMixin {
                                   child: CircularProgressIndicator(),
                                 ),
                               )
-                            : Expanded(
-                                child: ListView.builder(
-                                  shrinkWrap: true,
-                                  itemCount: widget.postViewModel.userPostsList.value.length,
-                                  itemBuilder: (_, i) {
-                                    final post = widget.postViewModel.userPostsList.value[i];
+                            : Visibility(
+                                visible: widget.postViewModel.userPostsList.value.isNotEmpty,
+                                replacement: Expanded(
+                                  child: Center(
+                                    child: Text(
+                                      'O usuário não possui nenhum post salvo',
+                                      style: Theme.of(context).textTheme.bodyLarge,
+                                    ),
+                                  ),
+                                ),
+                                child: Expanded(
+                                  child: ListView.builder(
+                                    shrinkWrap: true,
+                                    itemCount: widget.postViewModel.userPostsList.value.length,
+                                    itemBuilder: (_, i) {
+                                      final post = widget.postViewModel.userPostsList.value[i];
 
-                                    return ListTile(
-                                      title: UserTile(
-                                        user: widget.userViewModel.currentUser,
-                                        onTap: null,
-                                        tileType: UserTileType.minimal,
-                                      ),
-                                      contentPadding: EdgeInsets.zero,
-                                      subtitle: Text(
-                                        post.title,
-                                        maxLines: 2,
-                                        overflow: TextOverflow.fade,
-                                        style: Theme.of(context).textTheme.bodyLarge,
-                                      ),
-                                      onTap: () {
-                                        Modular.to.pushNamed(PostModuleRoutes.POST_PAGE, arguments: post);
-                                      },
-                                      trailing: widget.userViewModel.currentUser.userType == UserType.primary
-                                          ? IconButton(
-                                              onPressed: () async {
-                                                await widget.postViewModel.likePostCommand.execute(post);
-                                              },
-                                              icon: post.hasUserLike
-                                                  ? Icon(
-                                                      FluentIcons.heart_12_filled,
-                                                      color: Theme.of(context).colorScheme.primary,
-                                                    )
-                                                  : Icon(
-                                                      FluentIcons.heart_12_regular,
-                                                    ),
-                                            )
-                                          : null,
-                                    );
-                                  },
+                                      return ListTile(
+                                        title: UserTile(
+                                          user: widget.userViewModel.currentUser,
+                                          onTap: null,
+                                          tileType: UserTileType.minimal,
+                                        ),
+                                        contentPadding: EdgeInsets.zero,
+                                        subtitle: Text(
+                                          post.title,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.fade,
+                                          style: Theme.of(context).textTheme.bodyLarge,
+                                        ),
+                                        onTap: () {
+                                          Modular.to.pushNamed(PostModuleRoutes.POST_PAGE, arguments: post);
+                                        },
+                                        trailing: widget.userViewModel.currentUser.userType == UserType.primary
+                                            ? IconButton(
+                                                onPressed: () async {
+                                                  await widget.postViewModel.likePostCommand.execute(post);
+                                                },
+                                                icon: post.hasUserLike
+                                                    ? Icon(
+                                                        FluentIcons.heart_12_filled,
+                                                        color: Theme.of(context).colorScheme.primary,
+                                                      )
+                                                    : Icon(
+                                                        FluentIcons.heart_12_regular,
+                                                      ),
+                                              )
+                                            : null,
+                                      );
+                                    },
+                                  ),
                                 ),
                               );
                       },

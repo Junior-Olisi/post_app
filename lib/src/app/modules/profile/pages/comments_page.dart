@@ -48,7 +48,7 @@ class _CommentsPageState extends State<CommentsPage> with CommentsPageMixin {
                 return ListTile(
                   contentPadding: EdgeInsets.zero,
                   title: Text(
-                    widget.user.name,
+                    comment.name,
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   subtitle: Text(

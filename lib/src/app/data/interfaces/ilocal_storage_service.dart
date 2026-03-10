@@ -4,4 +4,5 @@ abstract interface class IlocalStorageService<T> {
   Future<List<T>> getAllData();
   Future<T?> updateData(int key, T data);
   Future<void> deleteData(int key);
+  Future<void> deleteAllData();
 }

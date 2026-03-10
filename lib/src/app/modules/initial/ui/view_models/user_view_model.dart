@@ -19,6 +19,7 @@ class UserViewModel {
   late final savePrimaryUserCommand = Command1(_savePrimaryUser);
   late final selectSecondaryUserProfileCommand = Command1(_selectSecondaryUserProfile);
   late final exitFromProfileSearchCommand = Command0(_exitFromProfileSearch);
+  late final exitFromApplicationCommand = Command0(_exitFromApplication);
 
   AsyncResult<User> _addUser(NewUserDto dto) {
     return _repository.addUser(dto);
@@ -42,5 +43,9 @@ class UserViewModel {
 
   AsyncResult<User> _exitFromProfileSearch() {
     return _repository.exitFromProfileSearch();
+  }
+
+  AsyncResult<Unit> _exitFromApplication() {
+    return _repository.exitFromApplication();
   }
 }

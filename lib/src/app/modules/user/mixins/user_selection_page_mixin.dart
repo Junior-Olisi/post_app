@@ -33,7 +33,7 @@ mixin UserSelectionPageMixin<T extends StatefulWidget> on State<UserSelectionPag
 
       await widget.postViewModel.getUserPostsCommand.execute(result.value);
 
-      return Modular.to.navigate(UserModuleRoutes.HOME_PAGE);
+      return Modular.to.pushNamed(UserModuleRoutes.HOME_PAGE);
     }
   }
 

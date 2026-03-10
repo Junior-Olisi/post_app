@@ -205,4 +205,23 @@ class PostLocalStorageService implements IlocalStorageService<Post> {
       }
     }
   }
+
+  @override
+  Future<void> deleteAllData() async {
+    try {
+      _databaseInstance = await openDatabase(LocalStorage.LocalDb);
+
+      await _databaseInstance.rawQuery('DROP TABLE user');
+      await _databaseInstance.rawQuery('DROP TABLE address');
+      await _databaseInstance.rawQuery('DROP TABLE post');
+    } on StorageError {
+      rethrow;
+    } on Exception catch (e) {
+      throw StorageError(message: 'Erro ao remover banco de dados.\n${e.toString()}');
+    } finally {
+      if (_databaseInstance.isOpen) {
+        await _databaseInstance.close();
+      }
+    }
+  }
 }
