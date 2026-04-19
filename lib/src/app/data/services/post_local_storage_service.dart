@@ -4,7 +4,7 @@ import 'package:post_app/src/app/domain/entities/post/post.dart';
 import 'package:post_app/src/app/shared/backend/local_storage.dart';
 import 'package:sqflite/sqflite.dart';
 
-class PostLocalStorageService implements IlocalStorageService<Post> {
+class PostLocalStorageService implements ILocalStorageService<Post> {
   late Database _databaseInstance;
 
   @override

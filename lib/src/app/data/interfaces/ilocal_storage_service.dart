@@ -1,4 +1,4 @@
-abstract interface class IlocalStorageService<T> {
+abstract interface class ILocalStorageService<T> {
   Future<void> saveData(int key, T data);
   Future<T?> getData(int key);
   Future<List<T>> getAllData();

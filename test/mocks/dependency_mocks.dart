@@ -6,6 +6,6 @@ import 'package:post_app/src/app/domain/entities/user/user.dart';
 
 class DioMock extends Mock implements DioForNative {}
 
-class UserLocalStorageServiceMock extends Mock implements IlocalStorageService<User> {}
+class UserLocalStorageServiceMock extends Mock implements ILocalStorageService<User> {}
 
-class PostLocalStorageServiceMock extends Mock implements IlocalStorageService<Post> {}
+class PostLocalStorageServiceMock extends Mock implements ILocalStorageService<Post> {}

@@ -20,7 +20,7 @@ class PostRepository implements IPostRepository {
   PostRepository(this._dio, this._localStorage);
 
   final Dio _dio;
-  final IlocalStorageService<Post> _localStorage;
+  final ILocalStorageService<Post> _localStorage;
 
   @override
   AsyncResult<PostList> getUserPosts(User user) async {

@@ -5,7 +5,7 @@ import 'package:post_app/src/app/domain/entities/user/user.dart';
 import 'package:post_app/src/app/shared/backend/local_storage.dart';
 import 'package:sqflite/sqflite.dart';
 
-class UserLocalStorageService implements IlocalStorageService<User> {
+class UserLocalStorageService implements ILocalStorageService<User> {
   late Database _databaseInstance;
 
   @override

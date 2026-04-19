@@ -22,7 +22,7 @@ void main() {
 
   late Dio dio;
   late IUserRepository repository;
-  late IlocalStorageService<User> storage;
+  late ILocalStorageService<User> storage;
 
   setUp(
     () {

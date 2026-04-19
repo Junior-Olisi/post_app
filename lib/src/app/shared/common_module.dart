@@ -22,7 +22,7 @@ class CommonModule extends Module {
       );
       return dio;
     });
-    i.add<IlocalStorageService<User>>(UserLocalStorageService.new);
-    i.add<IlocalStorageService<Post>>(PostLocalStorageService.new);
+    i.add<ILocalStorageService<User>>(UserLocalStorageService.new);
+    i.add<ILocalStorageService<Post>>(PostLocalStorageService.new);
   }
 }

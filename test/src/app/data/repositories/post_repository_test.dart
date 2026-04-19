@@ -23,7 +23,7 @@ void main() {
 
   late Dio dio;
   late IPostRepository repository;
-  late IlocalStorageService<Post> storage;
+  late ILocalStorageService<Post> storage;
 
   setUp(
     () {

@@ -16,7 +16,7 @@ class UserRepository implements IUserRepository {
   UserRepository(this._dio, this._localStorage);
 
   final Dio _dio;
-  final IlocalStorageService<User> _localStorage;
+  final ILocalStorageService<User> _localStorage;
 
   @override
   AsyncResult<User> addUser(NewUserDto dto) async {
