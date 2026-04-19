@@ -5,6 +5,8 @@ import 'package:post_app/src/app/domain/entities/user/user.dart';
 import 'package:post_app/src/app/modules/initial/ui/pages/initial_page.dart';
 import 'package:post_app/src/app/modules/initial/ui/view_models/user_view_model.dart';
 import 'package:post_app/src/app/shared/routes/user_module_routes.dart';
+import 'package:post_app/src/app/shared/widgets/app_button.dart';
+import 'package:post_app/src/app/shared/widgets/app_container.dart';
 import 'package:post_app/src/app/shared/widgets/user_tile.dart';
 import 'package:result_command/result_command.dart';
 
@@ -60,6 +62,7 @@ mixin InitialPageMixin<T extends StatefulWidget> on State<InitialPage> {
 
   savePrimaryUserListenable() async {
     final result = userViewModel.savePrimaryUserCommand.value;
+
     if (result is FailureCommand<User>) {
       final error = result.error as UserError;
 
@@ -76,6 +79,37 @@ mixin InitialPageMixin<T extends StatefulWidget> on State<InitialPage> {
 
       return Modular.to.navigate(UserModuleRoutes.HOME_PAGE);
     }
+  }
+
+  Widget initialPageBody() {
+    final size = MediaQuery.sizeOf(context);
+
+    return AppContainer(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Olá',
+            style: Theme.of(context).textTheme.displayLarge,
+          ),
+          Text('Seja bem vindo(a) ao Post App!'),
+          Spacer(),
+          Padding(
+            padding: EdgeInsets.only(bottom: size.height * 0.048),
+            child: Text(
+              'Selecione um perfil de usuário para começar',
+              style: Theme.of(context).textTheme.displaySmall,
+              textAlign: TextAlign.center,
+            ),
+          ),
+          AppButton(
+            onPressed: showUserOptionsDialog,
+            text: 'Selecionar Perfil de Usuário',
+          ),
+          Spacer(),
+        ],
+      ),
+    );
   }
 
   @override

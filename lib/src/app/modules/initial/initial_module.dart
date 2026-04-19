@@ -3,6 +3,7 @@ import 'package:post_app/src/app/data/interfaces/ipost_repository.dart';
 import 'package:post_app/src/app/data/interfaces/iuser_repository.dart';
 import 'package:post_app/src/app/data/repositories/post_repository.dart';
 import 'package:post_app/src/app/data/repositories/user_repository.dart';
+import 'package:post_app/src/app/data/strategies/user_list/user_list_context.dart';
 import 'package:post_app/src/app/modules/initial/ui/pages/initial_page.dart';
 import 'package:post_app/src/app/modules/initial/ui/view_models/post_view_model.dart';
 import 'package:post_app/src/app/modules/initial/ui/view_models/user_view_model.dart';
@@ -25,6 +26,7 @@ class InitialModule extends Module {
 
   @override
   void binds(Injector i) {
+    i.add<UserListContext>(UserListContext.new);
     i.addSingleton<IUserRepository>(UserRepository.new);
     i.addSingleton<UserViewModel>(UserViewModel.new);
     i.addSingleton<IPostRepository>(PostRepository.new);

@@ -4,19 +4,44 @@ import 'package:post_app/src/app/data/errors/application_error.dart';
 import 'package:post_app/src/app/data/errors/user/user_error.dart';
 import 'package:post_app/src/app/data/interfaces/ilocal_storage_service.dart';
 import 'package:post_app/src/app/data/interfaces/iuser_repository.dart';
+import 'package:post_app/src/app/data/strategies/user_list/local_user_list_strategy.dart';
+import 'package:post_app/src/app/data/strategies/user_list/remote_user_list_strategy.dart';
+import 'package:post_app/src/app/data/strategies/user_list/user_list_context.dart';
 import 'package:post_app/src/app/domain/entities/user/address.dart';
 import 'package:post_app/src/app/domain/entities/user/user.dart';
 import 'package:post_app/src/app/domain/entities/user/user_list.dart';
-import 'package:post_app/src/app/domain/enums/source_type.dart';
 import 'package:post_app/src/app/domain/enums/user_type.dart';
 import 'package:post_app/src/app/shared/backend/api_parameters.dart';
 import 'package:result_dart/result_dart.dart';
 
 class UserRepository implements IUserRepository {
-  UserRepository(this._dio, this._localStorage);
+  UserRepository(
+    this._dio,
+    this._localStorage,
+    this._context,
+  );
 
   final Dio _dio;
   final ILocalStorageService<User> _localStorage;
+  final UserListContext _context;
+
+  @override
+  AsyncResult<UserList> getAllUsers(StrategyType strategyType) async {
+    switch (strategyType) {
+      case StrategyType.Local:
+        _context.setStrategy(LocalUserListStrategy(_localStorage));
+        return _context.execute();
+      case StrategyType.Remote:
+        _context.setStrategy(RemoteUserListStrategy(_dio, _localStorage));
+        return _context.execute();
+    }
+  }
+
+  @override
+  AsyncResult<UserList> getRemoteUsers() async {
+    _context.setStrategy(RemoteUserListStrategy(_dio, _localStorage));
+    return _context.execute();
+  }
 
   @override
   AsyncResult<User> addUser(NewUserDto dto) async {
@@ -53,64 +78,6 @@ class UserRepository implements IUserRepository {
       return Failure(UserError(message: e.message));
     } on Exception catch (_) {
       return Failure(UserError(message: 'Erro desconhecido ao criar usuário.'));
-    }
-  }
-
-  @override
-  AsyncResult<UserList> getUsers() async {
-    try {
-      final localUsersList = await _localStorage.getAllData();
-
-      if (localUsersList.isNotEmpty) {
-        final userList = UserList(users: localUsersList, source: SourceType.cache);
-        return Success(userList);
-      }
-
-      final result = await _dio.get('${ApiParameters.jsonPlaceholderApiUrl}/users');
-      final userMapsList = result.data as List;
-
-      List<User> users = [];
-
-      for (var map in userMapsList) {
-        map = map as Map<String, dynamic>;
-        User user = User.fromJson(map);
-        final mergeResult = await mergeUserData(user);
-
-        mergeResult.fold((mergedUser) {
-          users.add(mergedUser);
-        }, (_) => null);
-      }
-
-      final userList = UserList(users: users);
-
-      return Success(userList);
-    } on DioException catch (e) {
-      return Failure(UserError(message: e.message ?? 'Erro ao buscar usuários'));
-    } on Exception catch (_) {
-      return Failure(UserError(message: 'Erro desconhecido ao realizar requisição http.'));
-    }
-  }
-
-  @override
-  AsyncResult<User> mergeUserData(User user) async {
-    try {
-      final result = await _dio.get('${ApiParameters.randomUserApiUrl}/?seed=${user.id}&inc=picture&results=1');
-
-      final response = result.data as Map<String, dynamic>;
-      final resultsResponseField = response['results'] as List;
-      final userPictureMap = resultsResponseField.first['picture'];
-      final userImageUrl = userPictureMap['large'];
-
-      user = user.copyWith(profileImage: userImageUrl);
-      await _localStorage.saveData(user.id, user);
-
-      return Success(user);
-    } on DioException catch (e) {
-      return Failure(UserError(message: e.message ?? ''));
-    } on ApplicationError catch (e) {
-      return Failure(UserError(message: e.message));
-    } on Exception catch (_) {
-      return Failure(UserError(message: 'Erro desconhecido ao realizar operação com dados do usuário.'));
     }
   }
 

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:post_app/src/app/data/errors/user/user_error.dart';
+import 'package:post_app/src/app/data/strategies/user_list/user_list_context.dart';
 import 'package:post_app/src/app/domain/entities/user/user_list.dart';
 import 'package:post_app/src/app/domain/enums/user_type.dart';
 import 'package:post_app/src/app/modules/initial/ui/view_models/user_view_model.dart';
@@ -39,36 +41,42 @@ mixin SplashPageMixin<T extends StatefulWidget> on State<T> {
 
   Future<void> initializeApp() async {
     await Future.delayed(const Duration(milliseconds: 1500));
-    userViewModel.getAllUsersCommand.addListener(getAllUsersListenable);
-    await userViewModel.getAllUsersCommand.execute();
+    userViewModel.getAllUsersCommand.addListener(getLocalUsersListenable);
+    await userViewModel.getAllUsersCommand.execute(StrategyType.Local);
   }
 
-  getAllUsersListenable() async {
+  getLocalUsersListenable() async {
     final result = userViewModel.getAllUsersCommand.value;
 
     if (result is FailureCommand<UserList>) {
+      final error = result.error as UserError;
+
       showRetryButton.value = true;
 
       return ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-          content: Text('Erro ao obter lista de usuários. Tente novamente'),
+          content: Text(error.message),
         ),
       );
     }
 
     if (result is SuccessCommand<UserList>) {
-      userViewModel.usersList = result.value.users;
+      if (result.value.users.isNotEmpty) {
+        userViewModel.usersList = result.value.users;
 
-      bool primaryUserAlreadySaved = userViewModel.usersList.any((user) => user.userType == UserType.primary);
+        bool primaryUserAlreadySaved = userViewModel.usersList.any((user) => user.userType == UserType.primary);
 
-      if (primaryUserAlreadySaved) {
-        final primaryUser = userViewModel.usersList.where((user) => user.userType == UserType.primary).first;
-        userViewModel.currentUser = primaryUser;
-        return Modular.to.navigate(UserModuleRoutes.HOME_PAGE);
+        if (primaryUserAlreadySaved) {
+          final primaryUser = userViewModel.usersList.where((user) => user.userType == UserType.primary).first;
+          userViewModel.currentUser = primaryUser;
+          return Modular.to.navigate(UserModuleRoutes.HOME_PAGE);
+        }
+
+        Modular.to.pushReplacementNamed(InitialModuleRoutes.INITIAL);
+      } else {
+        await userViewModel.getAllUsersCommand.execute(StrategyType.Remote);
       }
-
-      Modular.to.pushReplacementNamed(InitialModuleRoutes.INITIAL);
     }
   }
 
@@ -112,7 +120,7 @@ mixin SplashPageMixin<T extends StatefulWidget> on State<T> {
                           replacement: Container(),
                           child: AppButton(
                             onPressed: () async {
-                              await userViewModel.getAllUsersCommand.execute();
+                              await userViewModel.getAllUsersCommand.execute(StrategyType.Local);
                             },
                             text: 'Tentar Novamente',
                           ),
@@ -129,7 +137,7 @@ mixin SplashPageMixin<T extends StatefulWidget> on State<T> {
   @override
   void dispose() {
     animationController.dispose();
-    userViewModel.getAllUsersCommand.removeListener(getAllUsersListenable);
+    userViewModel.getAllUsersCommand.removeListener(getLocalUsersListenable);
     super.dispose();
   }
 }
