@@ -5,6 +5,8 @@ import 'package:post_app/src/app/domain/enums/user_type.dart';
 import 'package:post_app/src/app/modules/initial/ui/view_models/user_view_model.dart';
 import 'package:post_app/src/app/shared/routes/initial_module_routes.dart';
 import 'package:post_app/src/app/shared/routes/user_module_routes.dart';
+import 'package:post_app/src/app/shared/widgets/app_button.dart';
+import 'package:post_app/src/app/shared/widgets/app_container.dart';
 import 'package:result_command/result_command.dart';
 
 mixin SplashPageMixin<T extends StatefulWidget> on State<T> {
@@ -12,8 +14,15 @@ mixin SplashPageMixin<T extends StatefulWidget> on State<T> {
 
   late AnimationController animationController;
   late Animation<double> fadeAnimation;
+  late String logoImage;
 
   ValueNotifier<bool> showRetryButton = ValueNotifier(false);
+
+  setSplashPageLogoDisplay() {
+    logoImage = Theme.of(context).brightness == Brightness.light
+        ? 'assets/logo/light_logo.png' //
+        : 'assets/logo/dark_logo.png';
+  }
 
   void setupAnimation(TickerProvider tickerProvider) {
     animationController = AnimationController(
@@ -61,6 +70,60 @@ mixin SplashPageMixin<T extends StatefulWidget> on State<T> {
 
       Modular.to.pushReplacementNamed(InitialModuleRoutes.INITIAL);
     }
+  }
+
+  Widget splashPageBody() {
+    final size = MediaQuery.sizeOf(context);
+
+    setSplashPageLogoDisplay();
+
+    return AppContainer(
+      child: FadeTransition(
+        opacity: fadeAnimation,
+        child: Center(
+          child: Column(
+            spacing: size.height * 0.024,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: size.height * 0.115,
+                height: size.height * 0.115,
+                child: Image.asset(
+                  logoImage,
+                  fit: BoxFit.contain,
+                ),
+              ),
+              AnimatedBuilder(
+                animation: Listenable.merge(
+                  [
+                    userViewModel.getAllUsersCommand,
+                    showRetryButton,
+                  ],
+                ),
+                builder: (_, __) {
+                  final isLoadingState = userViewModel.getAllUsersCommand.value.isRunning;
+
+                  return isLoadingState
+                      ? Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      : Visibility(
+                          visible: showRetryButton.value,
+                          replacement: Container(),
+                          child: AppButton(
+                            onPressed: () async {
+                              await userViewModel.getAllUsersCommand.execute();
+                            },
+                            text: 'Tentar Novamente',
+                          ),
+                        );
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   @override

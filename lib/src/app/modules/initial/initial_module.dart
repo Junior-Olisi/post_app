@@ -41,17 +41,14 @@ class InitialModule extends Module {
       InitialModuleRoutes.INITIAL,
       child: (context) => const InitialPage(),
     );
-
     r.module(
       UserModuleRoutes.ROOT,
       module: UserModule(),
     );
-
     r.module(
       ProfileModuleRoutes.ROOT,
       module: ProfileModule(),
     );
-
     r.module(
       PostModuleRoutes.ROOT,
       module: PostModule(),
