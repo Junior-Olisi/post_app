@@ -18,6 +18,8 @@ mixin SplashPageMixin<T extends StatefulWidget> on State<T> {
   late Animation<double> fadeAnimation;
   late String logoImage;
 
+  int initializationTimeSpanInSeconds = 2;
+
   ValueNotifier<bool> showRetryButton = ValueNotifier(false);
 
   setSplashPageLogoDisplay() {
@@ -28,7 +30,7 @@ mixin SplashPageMixin<T extends StatefulWidget> on State<T> {
 
   void setupAnimation(TickerProvider tickerProvider) {
     animationController = AnimationController(
-      duration: const Duration(milliseconds: 1500),
+      duration: Duration(seconds: initializationTimeSpanInSeconds),
       vsync: tickerProvider,
     );
 
@@ -40,7 +42,7 @@ mixin SplashPageMixin<T extends StatefulWidget> on State<T> {
   }
 
   Future<void> initializeApp() async {
-    await Future.delayed(const Duration(milliseconds: 1500));
+    await Future.delayed(Duration(seconds: initializationTimeSpanInSeconds));
     userViewModel.getAllUsersCommand.addListener(getLocalUsersListenable);
     await userViewModel.getAllUsersCommand.execute(StrategyType.Local);
   }

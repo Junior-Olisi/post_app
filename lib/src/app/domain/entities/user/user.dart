@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:post_app/src/app/data/dtos/user/new_user_dto.dart';
 import 'package:post_app/src/app/domain/entities/user/address.dart';
 import 'package:post_app/src/app/domain/enums/user_type.dart';
 
@@ -20,4 +21,20 @@ abstract class User with _$User {
   }) = _User;
 
   factory User.fromJson(Map<String, dynamic> map) => _$UserFromJson(map);
+
+  factory User.create(NewUserDto dto) {
+    return User(
+      id: dto.id,
+      name: dto.name,
+      username: dto.username,
+      email: dto.email,
+      phone: dto.phone,
+      website: dto.website,
+      address: Address(
+        street: dto.address.street,
+        suite: dto.address.suite,
+        city: dto.address.city,
+      ),
+    );
+  }
 }

@@ -1,6 +1,7 @@
 import 'package:post_app/src/app/data/dtos/user/new_address_dto.dart';
 
 class NewUserDto {
+  int id;
   String name;
   String username;
   String email;
@@ -10,6 +11,7 @@ class NewUserDto {
   NewAddressDto address;
 
   NewUserDto({
+    required this.id,
     required this.name,
     required this.username,
     required this.email,
@@ -20,6 +22,7 @@ class NewUserDto {
   });
 
   factory NewUserDto.empty() => NewUserDto(
+    id: 0,
     name: '',
     username: '',
     email: '',
@@ -27,6 +30,10 @@ class NewUserDto {
     profileImage: '',
     address: NewAddressDto.empty(),
   );
+
+  void setId(int newValue) {
+    id = newValue;
+  }
 
   void setName(String? newValue) {
     name = newValue ?? '';

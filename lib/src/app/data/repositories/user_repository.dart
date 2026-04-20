@@ -7,7 +7,6 @@ import 'package:post_app/src/app/data/interfaces/iuser_repository.dart';
 import 'package:post_app/src/app/data/strategies/user_list/local_user_list_strategy.dart';
 import 'package:post_app/src/app/data/strategies/user_list/remote_user_list_strategy.dart';
 import 'package:post_app/src/app/data/strategies/user_list/user_list_context.dart';
-import 'package:post_app/src/app/domain/entities/user/address.dart';
 import 'package:post_app/src/app/domain/entities/user/user.dart';
 import 'package:post_app/src/app/domain/entities/user/user_list.dart';
 import 'package:post_app/src/app/domain/enums/user_type.dart';
@@ -38,41 +37,19 @@ class UserRepository implements IUserRepository {
   }
 
   @override
-  AsyncResult<UserList> getRemoteUsers() async {
-    _context.setStrategy(RemoteUserListStrategy(_dio, _localStorage));
-    return _context.execute();
-  }
-
-  @override
   AsyncResult<User> addUser(NewUserDto dto) async {
     try {
       final usersList = await _localStorage.getAllData();
       int userCount = usersList.length + 10;
-      final userId = userCount++;
-      User newUser = User(
-        id: userId,
-        name: dto.name,
-        username: dto.username,
-        email: dto.email,
-        phone: dto.phone,
-        website: dto.website,
-        address: Address(
-          street: dto.address.street,
-          suite: dto.address.suite,
-          city: dto.address.city,
-        ),
-      );
-
-      final result = await _dio.get('${ApiParameters.randomUserApiUrl}/?seed=$userId&inc=picture&results=1');
+      dto.setId(userCount++);
+      User newUser = User.create(dto);
+      final result = await _dio.get('${ApiParameters.randomUserApiUrl}/?seed=${newUser.id}&inc=picture&results=1');
       final response = result.data as Map<String, dynamic>;
       final resultsResponseField = response['results'] as List;
       final userPictureMap = resultsResponseField.first['picture'];
       final userImageUrl = userPictureMap['large'];
-
       newUser = newUser.copyWith(profileImage: userImageUrl);
-
-      await _localStorage.saveData(userId, newUser);
-
+      await _localStorage.saveData(newUser.id, newUser);
       return Success(newUser);
     } on ApplicationError catch (e) {
       return Failure(UserError(message: e.message));
