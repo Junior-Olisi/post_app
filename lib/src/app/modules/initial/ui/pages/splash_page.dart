@@ -17,7 +17,5 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
   }
 
   @override
-  Widget build(BuildContext context) {
-    return splashPageBody();
-  }
+  Widget build(BuildContext context) => splashPageBody();
 }

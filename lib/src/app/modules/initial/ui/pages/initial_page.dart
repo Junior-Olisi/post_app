@@ -10,7 +10,5 @@ class InitialPage extends StatefulWidget {
 
 class _InitialPageState extends State<InitialPage> with InitialPageMixin {
   @override
-  Widget build(BuildContext context) {
-    return initialPageBody();
-  }
+  Widget build(BuildContext context) => initialPageBody();
 }
