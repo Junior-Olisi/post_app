@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:post_app/src/app/data/errors/storage/storage_error.dart';
 import 'package:post_app/src/app/data/services/post_local_storage_service.dart';
-import 'package:post_app/src/app/shared/backend/local_storage.dart';
+import 'package:post_app/src/app/shared/external/local_storage.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import '../../../../mocks/post_mocks.dart';

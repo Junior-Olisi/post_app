@@ -2,7 +2,7 @@ import 'package:post_app/src/app/data/errors/storage/storage_error.dart';
 import 'package:post_app/src/app/data/interfaces/ilocal_storage_service.dart';
 import 'package:post_app/src/app/domain/entities/user/address.dart';
 import 'package:post_app/src/app/domain/entities/user/user.dart';
-import 'package:post_app/src/app/shared/backend/local_storage.dart';
+import 'package:post_app/src/app/shared/external/local_storage.dart';
 import 'package:sqflite/sqflite.dart';
 
 class UserLocalStorageService implements ILocalStorageService<User> {

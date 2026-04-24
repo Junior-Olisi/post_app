@@ -13,7 +13,7 @@ import 'package:post_app/src/app/domain/entities/post/post_list.dart';
 import 'package:post_app/src/app/domain/entities/user/user.dart';
 import 'package:post_app/src/app/domain/enums/source_type.dart';
 import 'package:post_app/src/app/domain/enums/user_type.dart';
-import 'package:post_app/src/app/shared/backend/api_parameters.dart';
+import 'package:post_app/src/app/shared/external/api_parameters.dart';
 import 'package:result_dart/result_dart.dart';
 
 class PostRepository implements IPostRepository {

@@ -5,7 +5,7 @@ import 'package:post_app/src/app/data/interfaces/ilocal_storage_service.dart';
 import 'package:post_app/src/app/data/strategies/user_list/iuser_list_strategy.dart';
 import 'package:post_app/src/app/domain/entities/user/user.dart';
 import 'package:post_app/src/app/domain/entities/user/user_list.dart';
-import 'package:post_app/src/app/shared/backend/api_parameters.dart';
+import 'package:post_app/src/app/shared/external/api_parameters.dart';
 import 'package:result_dart/result_dart.dart';
 
 class RemoteUserListStrategy implements IUserListStrategy {
