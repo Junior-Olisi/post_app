@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+/* import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:post_app/src/app/data/errors/user/user_error.dart';
 import 'package:post_app/src/app/domain/entities/user/user.dart';
@@ -113,3 +113,4 @@ mixin ProfilePageMixin<T extends StatefulWidget> on State<ProfilePage> {
     super.dispose();
   }
 }
+ */

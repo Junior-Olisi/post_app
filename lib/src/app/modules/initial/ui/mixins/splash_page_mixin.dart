@@ -1,19 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:post_app/src/app/data/errors/user/user_error.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:post_app/src/app/data/strategies/user_list/user_list_context.dart';
-import 'package:post_app/src/app/domain/entities/user/user_list.dart';
-import 'package:post_app/src/app/domain/enums/user_type.dart';
+import 'package:post_app/src/app/modules/initial/ui/pages/splash_page.dart';
 import 'package:post_app/src/app/modules/initial/ui/view_models/user_view_model.dart';
 import 'package:post_app/src/app/shared/routes/initial_module_routes.dart';
 import 'package:post_app/src/app/shared/routes/user_module_routes.dart';
 import 'package:post_app/src/app/shared/widgets/app_button.dart';
 import 'package:post_app/src/app/shared/widgets/app_container.dart';
-import 'package:result_command/result_command.dart';
 
-mixin SplashPageMixin<T extends StatefulWidget> on State<T> {
-  final userViewModel = Modular.get<UserViewModel>();
-
+mixin SplashPageMixin<T extends ConsumerStatefulWidget> on ConsumerState<SplashPage> {
   late AnimationController animationController;
   late Animation<double> fadeAnimation;
   late String logoImage;
@@ -43,43 +39,40 @@ mixin SplashPageMixin<T extends StatefulWidget> on State<T> {
 
   Future<void> initializeApp() async {
     await Future.delayed(Duration(seconds: initializationTimeSpanInSeconds));
-    userViewModel.getAllUsersCommand.addListener(getLocalUsersListenable);
-    await userViewModel.getAllUsersCommand.execute(StrategyType.Local);
-  }
 
-  getLocalUsersListenable() async {
-    final result = userViewModel.getAllUsersCommand.value;
+    final controller = ref.read(userStateProvider.notifier);
+    final localUsers = await controller.getAllUsers(strategyType: StrategyType.Local);
 
-    if (result is FailureCommand<UserList>) {
-      final error = result.error as UserError;
+    if (!mounted) {
+      return;
+    }
 
+    if (localUsers == null) {
       showRetryButton.value = true;
-
-      return ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-          content: Text(error.message),
-        ),
-      );
+      return;
     }
 
-    if (result is SuccessCommand<UserList>) {
-      if (result.value.users.isNotEmpty) {
-        userViewModel.usersList = result.value.users;
-
-        bool primaryUserAlreadySaved = userViewModel.usersList.any((user) => user.userType == UserType.primary);
-
-        if (primaryUserAlreadySaved) {
-          final primaryUser = userViewModel.usersList.where((user) => user.userType == UserType.primary).first;
-          userViewModel.currentUser = primaryUser;
-          return Modular.to.navigate(UserModuleRoutes.HOME_PAGE);
-        }
-
-        Modular.to.pushReplacementNamed(InitialModuleRoutes.INITIAL);
+    if (localUsers.users.isNotEmpty) {
+      if (ref.read(userStateProvider).currentUser != null) {
+        Modular.to.navigate(UserModuleRoutes.HOME_PAGE);
       } else {
-        await userViewModel.getAllUsersCommand.execute(StrategyType.Remote);
+        Modular.to.pushReplacementNamed(InitialModuleRoutes.INITIAL);
       }
+      return;
     }
+
+    final remoteUsers = await controller.getAllUsers(strategyType: StrategyType.Remote);
+
+    if (!mounted) {
+      return;
+    }
+
+    if (remoteUsers == null) {
+      showRetryButton.value = true;
+      return;
+    }
+
+    Modular.to.pushReplacementNamed(InitialModuleRoutes.INITIAL);
   }
 
   Widget splashPageBody() {
@@ -106,27 +99,21 @@ mixin SplashPageMixin<T extends StatefulWidget> on State<T> {
               AnimatedBuilder(
                 animation: Listenable.merge(
                   [
-                    userViewModel.getAllUsersCommand,
                     showRetryButton,
                   ],
                 ),
                 builder: (_, __) {
-                  final isLoadingState = userViewModel.getAllUsersCommand.value.isRunning;
-
-                  return isLoadingState
-                      ? Center(
-                          child: CircularProgressIndicator(),
-                        )
-                      : Visibility(
-                          visible: showRetryButton.value,
-                          replacement: Container(),
-                          child: AppButton(
-                            onPressed: () async {
-                              await userViewModel.getAllUsersCommand.execute(StrategyType.Local);
-                            },
-                            text: 'Tentar Novamente',
-                          ),
-                        );
+                  return Visibility(
+                    visible: showRetryButton.value,
+                    replacement: Container(),
+                    child: AppButton(
+                      onPressed: () async {
+                        showRetryButton.value = false;
+                        await initializeApp();
+                      },
+                      text: 'Tentar Novamente',
+                    ),
+                  );
                 },
               ),
             ],
@@ -139,7 +126,6 @@ mixin SplashPageMixin<T extends StatefulWidget> on State<T> {
   @override
   void dispose() {
     animationController.dispose();
-    userViewModel.getAllUsersCommand.removeListener(getLocalUsersListenable);
     super.dispose();
   }
 }
