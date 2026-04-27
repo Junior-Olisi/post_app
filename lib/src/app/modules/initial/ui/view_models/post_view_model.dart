@@ -20,7 +20,7 @@ class PostViewModel extends StateNotifier<PostState> {
           postComments: [],
           userComments: [],
           errorMessage: null,
-          lastSource: null,
+          sourceType: null,
         ),
       );
 
@@ -202,7 +202,7 @@ class PostState {
     required this.postComments,
     required this.userComments,
     required this.errorMessage,
-    required this.lastSource,
+    required this.sourceType,
   });
 
   final bool isLoading;
@@ -211,7 +211,7 @@ class PostState {
   final List<Comment> postComments;
   final List<Comment> userComments;
   final String? errorMessage;
-  final SourceType? lastSource;
+  final SourceType? sourceType;
 
   PostState copyWith({
     bool? isLoading,
@@ -230,7 +230,7 @@ class PostState {
       postComments: postComments ?? this.postComments,
       userComments: userComments ?? this.userComments,
       errorMessage: clearErrorMessage ? null : errorMessage ?? this.errorMessage,
-      lastSource: lastSource ?? this.lastSource,
+      sourceType: lastSource ?? sourceType,
     );
   }
 }
