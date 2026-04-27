@@ -1,23 +1,46 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:post_app/src/app/data/dtos/user/new_user_dto.dart';
+import 'package:post_app/src/app/domain/validators/user/new_address_validator.dart';
+import 'package:post_app/src/app/domain/validators/user/new_user_validator.dart';
 import 'package:post_app/src/app/modules/initial/ui/view_models/user_view_model.dart';
-import 'package:post_app/src/app/modules/user/mixins/add_user_page_mixin.dart';
+import 'package:post_app/src/app/shared/routes/user_module_routes.dart';
 import 'package:post_app/src/app/shared/widgets/app_button.dart';
 import 'package:post_app/src/app/shared/widgets/app_container.dart';
 
-class AddUserPage extends StatefulWidget {
-  const AddUserPage({required this.userViewModel, super.key});
-
-  final UserViewModel userViewModel;
+class AddUserPage extends ConsumerStatefulWidget {
+  const AddUserPage({super.key});
 
   @override
-  State<AddUserPage> createState() => _AddUserPageState();
+  ConsumerState<AddUserPage> createState() => _AddUserPageState();
 }
 
-class _AddUserPageState extends State<AddUserPage> with AddUserPageMixin<AddUserPage> {
+class _AddUserPageState extends ConsumerState<AddUserPage> {
+  final newUserValidator = NewUserValidator();
+  final newAddressValidator = NewAddressValidator();
+  final newUserDto = NewUserDto.empty();
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
     final spacing = size.height * 0.048;
+    final userState = ref.watch(userStateProvider);
+
+    if (userState.errorMessage != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) {
+          return;
+        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+            content: Text(userState.errorMessage!),
+          ),
+        );
+        ref.read(userStateProvider.notifier).clearError();
+      });
+    }
 
     return AppContainer(
       child: ListView(
@@ -151,7 +174,21 @@ class _AddUserPageState extends State<AddUserPage> with AddUserPageMixin<AddUser
             text: 'Salvar',
             onPressed: () async {
               if (newUserValidator.validate(newUserDto).isValid) {
-                await widget.userViewModel.addUserCommand.execute(newUserDto);
+                final newUser = await ref.read(userStateProvider.notifier).addUser(newUserDto);
+
+                if (newUser == null || !mounted) {
+                  return;
+                }
+
+                final currentUser = ref.read(userStateProvider).currentUser;
+                if (currentUser == null) {
+                  await ref.read(userStateProvider.notifier).savePrimaryUser(newUser);
+                  if (mounted) {
+                    Modular.to.navigate(UserModuleRoutes.HOME_PAGE);
+                  }
+                } else {
+                  Modular.to.pop();
+                }
               }
             },
           ),

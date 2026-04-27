@@ -1,29 +1,48 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:post_app/src/app/data/errors/user/user_error.dart';
-import 'package:post_app/src/app/domain/entities/user/user.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:post_app/src/app/data/strategies/user_list/user_list_context.dart';
+import 'package:post_app/src/app/domain/entities/user/user_list.dart';
 import 'package:post_app/src/app/modules/initial/ui/pages/initial_page.dart';
 import 'package:post_app/src/app/modules/initial/ui/view_models/user_view_model.dart';
 import 'package:post_app/src/app/shared/routes/user_module_routes.dart';
 import 'package:post_app/src/app/shared/widgets/app_button.dart';
 import 'package:post_app/src/app/shared/widgets/app_container.dart';
 import 'package:post_app/src/app/shared/widgets/user_tile.dart';
-import 'package:result_command/result_command.dart';
 
-mixin InitialPageMixin<T extends StatefulWidget> on State<InitialPage> {
-  final userViewModel = Modular.get<UserViewModel>();
-
-  @override
-  initState() {
-    super.initState();
-
-    userViewModel.savePrimaryUserCommand.addListener(savePrimaryUserListenable);
-  }
-
-  showUserOptionsDialog() {
+mixin InitialPageMixin<T extends ConsumerStatefulWidget> on ConsumerState<InitialPage> {
+  Future<void> showUserOptionsDialog() async {
     final size = MediaQuery.sizeOf(context);
 
-    showDialog(
+    final controller = ref.read(userStateProvider.notifier);
+    final localUsers = await controller.getAllUsers(strategyType: StrategyType.Local);
+
+    UserList usersList = localUsers ?? const UserList(users: []);
+
+    if (usersList.users.isEmpty) {
+      final remoteUsers = await controller.getAllUsers(strategyType: StrategyType.Remote);
+      usersList = remoteUsers ?? const UserList(users: []);
+    }
+
+    final errorMessage = ref.read(userStateProvider).errorMessage;
+    if (errorMessage != null && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+          content: Text(errorMessage),
+        ),
+      );
+      controller.clearError();
+      return;
+    }
+
+    if (usersList.users.isEmpty || !mounted) {
+      return;
+    }
+
+    return showDialog(
       context: context,
       builder: (_) => AlertDialog(
         buttonPadding: EdgeInsets.zero,
@@ -40,12 +59,18 @@ mixin InitialPageMixin<T extends StatefulWidget> on State<InitialPage> {
         content: SizedBox(
           width: size.width,
           child: ListView(
-            children: userViewModel.usersList
+            children: usersList.users
                 .map(
                   (user) => UserTile(
                     user: user,
                     onTap: () async {
-                      await userViewModel.savePrimaryUserCommand.execute(user);
+                      final selectedUser = await controller.savePrimaryUser(user);
+                      if (!mounted || selectedUser == null) {
+                        return;
+                      }
+
+                      log(user.name);
+                      Modular.to.navigate(UserModuleRoutes.HOME_PAGE);
                     },
                     tileType: UserTileType.small,
                   ),
@@ -58,27 +83,6 @@ mixin InitialPageMixin<T extends StatefulWidget> on State<InitialPage> {
         ],
       ),
     );
-  }
-
-  savePrimaryUserListenable() async {
-    final result = userViewModel.savePrimaryUserCommand.value;
-
-    if (result is FailureCommand<User>) {
-      final error = result.error as UserError;
-
-      return ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-          content: Text(error.message),
-        ),
-      );
-    }
-
-    if (result is SuccessCommand<User>) {
-      userViewModel.currentUser = result.value;
-
-      return Modular.to.navigate(UserModuleRoutes.HOME_PAGE);
-    }
   }
 
   Widget initialPageBody() {
@@ -110,12 +114,5 @@ mixin InitialPageMixin<T extends StatefulWidget> on State<InitialPage> {
         ],
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    userViewModel.savePrimaryUserCommand.removeListener(savePrimaryUserListenable);
-
-    super.dispose();
   }
 }

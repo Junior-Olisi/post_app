@@ -8,12 +8,12 @@ import 'package:post_app/src/app/domain/entities/user/user.dart';
 import 'package:post_app/src/app/domain/entities/user/user_list.dart';
 import 'package:post_app/src/app/domain/enums/user_type.dart';
 
-class UserViewModel extends StateNotifier<UserState> {
-  UserViewModel(this._repository)
+class UserController extends StateNotifier<UserState> {
+  UserController(this._repository)
     : super(
-        const UserState(
+        UserState(
           isLoading: false,
-          list: UserList(users: []),
+          list: const UserList(users: []),
           currentUser: null,
           errorMessage: null,
         ),
@@ -146,7 +146,7 @@ class UserViewModel extends StateNotifier<UserState> {
         state = state.copyWith(
           isLoading: false,
           list: const UserList(users: []),
-          clearCurrentUser: true,
+          currentUser: null,
           errorMessage: null,
         );
       },
@@ -164,7 +164,7 @@ class UserViewModel extends StateNotifier<UserState> {
   }
 
   void clearError() {
-    state = state.copyWith(clearErrorMessage: true);
+    state = state.copyWith(errorMessage: null);
   }
 
   List<User> _replaceUser(List<User> users, User replacement) {
@@ -222,9 +222,9 @@ class UserState {
   }
 }
 
-final userStateProvider = StateNotifierProvider<UserViewModel, UserState>(
+final userStateProvider = StateNotifierProvider<UserController, UserState>(
   (ref) {
     final repository = Modular.get<IUserRepository>();
-    return UserViewModel(repository);
+    return UserController(repository);
   },
 );

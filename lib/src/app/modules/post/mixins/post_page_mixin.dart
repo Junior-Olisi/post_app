@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+/* import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:post_app/src/app/data/errors/post/post_error.dart';
 import 'package:post_app/src/app/domain/entities/post/comment.dart';
@@ -144,3 +144,4 @@ mixin PostPageMixin<T extends StatefulWidget> on State<PostPage> {
     super.dispose();
   }
 }
+ */

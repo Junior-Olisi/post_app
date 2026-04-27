@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:post_app/src/app/modules/initial/ui/mixins/splash_page_mixin.dart';
 
-class SplashPage extends StatefulWidget {
+class SplashPage extends ConsumerStatefulWidget {
   const SplashPage({super.key});
 
   @override
-  State<SplashPage> createState() => _SplashPageState();
+  ConsumerState<SplashPage> createState() => _SplashPageConsumerState();
 }
 
-class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateMixin, SplashPageMixin<SplashPage> {
+class _SplashPageConsumerState extends ConsumerState<SplashPage> with SingleTickerProviderStateMixin, SplashPageMixin<SplashPage> {
   @override
   void initState() {
     super.initState();
